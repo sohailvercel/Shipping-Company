@@ -5,9 +5,9 @@ interface AnimatedBackgroundProps {
   className?: string;
 }
 
-const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({ 
-  type, 
-  className = '' 
+const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
+  type,
+  className = ''
 }) => {
   const getBackgroundStyle = () => {
     switch (type) {
@@ -39,12 +39,12 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
   };
 
   return (
-    <div 
+    <div
       className={`absolute inset-0 w-full h-full ${className}`}
       style={getBackgroundStyle()}
     >
       {/* CSS Animations */}
-      <style jsx>{`
+      <style>{`
         @keyframes gradientShift {
           0% { background-position: 0% 50%; }
           50% { background-position: 100% 50%; }

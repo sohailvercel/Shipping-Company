@@ -1,8 +1,17 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Ship, Anchor, Truck, Check, Globe, Award } from 'lucide-react';
-import SimpleVideoBackground from './SimpleVideoBackground';
-import { carouselVideos } from '../assets/videos';
+import React, { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Ship,
+  Anchor,
+  Truck,
+  Check,
+  Globe,
+  Award,
+} from "lucide-react";
+import SimpleVideoBackground from "./SimpleVideoBackground";
+import { carouselVideos } from "../assets/videos";
 
 interface Slide {
   id: number;
@@ -30,72 +39,73 @@ const HeroCarousel: React.FC = () => {
   const slides: Slide[] = [
     {
       id: 1,
-      title: 'Global Maritime Excellence',
-      subtitle: 'Your Trusted Shipping Partner',
+      title: "Navigating Global Trade with You",
+      subtitle: "Your Gateway to Global Success",
       description:
-        'Connecting continents with reliable and efficient maritime solutions. Experience seamless global trade with our comprehensive services.',
-      image: '',
-      cta: 'Explore Services',
-      ctaLink: '/services',
+        "Connecting continents with reliable and efficient maritime solutions. Experience seamless global trade with our comprehensive services.",
+      image: "",
+      cta: "Get Quote",
+      ctaLink: "/quote",
       icon: Globe,
       stats: [
-        { value: '24/7', label: 'Support' },
-        { value: 'Global', label: 'Network' },
-        { value: '99.9%', label: 'Reliability' }
-      ]
+        { value: "24/7", label: "Support" },
+        { value: "Global", label: "Network" },
+        { value: "99.9%", label: "Reliability" },
+      ],
     },
     {
       id: 2,
-      title: 'Innovative Logistics Solutions',
-      subtitle: 'Beyond Boundaries',
+      title: "Innovative Logistics Solutions",
+      subtitle: "Beyond Boundaries",
       description:
-        'Cutting-edge logistics services designed to meet the demands of modern global trade. Fast, secure, and efficient delivery solutions.',
-      image: '',
-      cta: 'Get a Quote',
-      ctaLink: '/quote',
+        "Cutting-edge logistics built to meet the demands of modern global trade. Fast, secure and efficient delivery",
+      image: "",
+      cta: "Vessel Schedule",
+      ctaLink: "/schedule",
       icon: Truck,
       stats: [
-        { value: 'Fast', label: 'Delivery' },
-        { value: 'Secure', label: 'Handling' },
-        { value: 'Eco', label: 'Friendly' }
-      ]
+        { value: "Fast", label: "Delivery" },
+        { value: "Secure", label: "Handling" },
+        { value: "Eco", label: "Friendly" },
+      ],
     },
     {
       id: 3,
-      title: 'Decades of Excellence',
-      subtitle: 'Proven Track Record',
+      title: "Decades of Excellence",
+      subtitle: "Where Every Mile Builds Trust",
       description:
-        'With years of experience in the industry, we deliver exceptional maritime services with a commitment to quality and customer satisfaction.',
-      image: '',
-      cta: 'Our Story',
-      ctaLink: '/about',
+        "With 70+ years of expertise in the maritime industry, we continue to set the standard for quality, performance, and customer care.",
+      image: "",
+      cta: "About Us",
+      ctaLink: "/about",
       icon: Award,
       stats: [
-        { value: '70+', label: 'Years' },
-        { value: '500+', label: 'Partners' },
-        { value: '100%', label: 'Commitment' }
-      ]
-    }
+        { value: "70+", label: "Years" },
+        { value: "500+", label: "Partners" },
+        { value: "100%", label: "Commitment" },
+      ],
+    },
   ];
 
   // Detect prefers-reduced-motion once on mount
   useEffect(() => {
     let removeMotionListener: (() => void) | null = null;
-    if (typeof window !== 'undefined' && 'matchMedia' in window) {
-      const mql = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (typeof window !== "undefined" && "matchMedia" in window) {
+      const mql = window.matchMedia("(prefers-reduced-motion: reduce)");
       prefersReducedMotionRef.current = mql.matches;
       const onChange = (e: MediaQueryListEvent) => {
         prefersReducedMotionRef.current = e.matches;
       };
-      if (typeof mql.addEventListener === 'function') {
-        mql.addEventListener('change', onChange);
-        removeMotionListener = () => mql.removeEventListener('change', onChange);
+      if (typeof mql.addEventListener === "function") {
+        mql.addEventListener("change", onChange);
+        removeMotionListener = () =>
+          mql.removeEventListener("change", onChange);
       }
     }
 
     // Intersection observer to pause when hero isn't visible
     let observer: IntersectionObserver | null = null;
-    if ('IntersectionObserver' in window) {
+    if ("IntersectionObserver" in window) {
       observer = new IntersectionObserver(
         (entries) => {
           const entry = entries[0];
@@ -132,12 +142,14 @@ const HeroCarousel: React.FC = () => {
     const now = performance.now();
     const elapsed = now - slideStartRef.current;
     const baseTarget = TARGET_SLIDE_DURATION_MS;
-    const totalTarget = prefersReducedMotionRef.current ? Math.min(baseTarget, 2500) : baseTarget;
+    const totalTarget = prefersReducedMotionRef.current
+      ? Math.min(baseTarget, 2500)
+      : baseTarget;
     const remaining = Math.max(0, totalTarget - elapsed);
     clearAutoAdvance();
     autoAdvanceRef.current = window.setTimeout(() => {
       setSlideDirection(1);
-      setCurrentSlide(prev => (prev + 1) % slides.length);
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
     }, remaining);
   };
 
@@ -153,13 +165,13 @@ const HeroCarousel: React.FC = () => {
   const nextSlide = () => {
     clearAutoAdvance();
     setSlideDirection(1);
-    setCurrentSlide(prev => (prev + 1) % slides.length);
+    setCurrentSlide((prev) => (prev + 1) % slides.length);
   };
 
   const prevSlide = () => {
     clearAutoAdvance();
     setSlideDirection(-1);
-    setCurrentSlide(prev => (prev - 1 + slides.length) % slides.length);
+    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
   };
 
   const goToSlide = (index: number) => {
@@ -184,7 +196,15 @@ const HeroCarousel: React.FC = () => {
   // Removed unused AnimatedPopup component
 
   // Floating elements animation
-  const FloatingElement = ({ delay, children, className = '' }: { delay: number; children: React.ReactNode; className?: string }) => (
+  const FloatingElement = ({
+    delay,
+    children,
+    className = "",
+  }: {
+    delay: number;
+    children: React.ReactNode;
+    className?: string;
+  }) => (
     <motion.div
       initial={{ opacity: 0, y: 20, x: (Math.random() - 0.5) * 100 }}
       animate={{
@@ -196,8 +216,8 @@ const HeroCarousel: React.FC = () => {
         duration: 15 + Math.random() * 10,
         delay: delay,
         repeat: Infinity,
-        repeatType: 'reverse',
-        ease: 'linear',
+        repeatType: "reverse",
+        ease: "linear",
       }}
       className={`absolute ${className} pointer-events-none`}
     >
@@ -232,29 +252,29 @@ const HeroCarousel: React.FC = () => {
             exit="exit"
             variants={{
               enter: (direction: number) => ({
-                x: direction > 0 ? '100%' : '-100%',
-                opacity: 0.5
+                x: direction > 0 ? "100%" : "-100%",
+                opacity: 0.5,
               }),
               center: {
                 x: 0,
                 opacity: 1,
-                transition: { duration: 0.8, ease: 'easeInOut' }
+                transition: { duration: 0.8, ease: "easeInOut" },
               },
               exit: (direction: number) => ({
-                x: direction > 0 ? '-100%' : '100%',
+                x: direction > 0 ? "-100%" : "100%",
                 opacity: 0.5,
-                transition: { duration: 0.8, ease: 'easeInOut' }
-              })
+                transition: { duration: 0.8, ease: "easeInOut" },
+              }),
             }}
           >
             {/* Media Background */}
             <div className="absolute inset-0 z-0">
-              {carouselVideos[safeCurrentSlideIndex]?.type === 'video' ? (
+              {carouselVideos[safeCurrentSlideIndex]?.type === "video" ? (
                 <SimpleVideoBackground
                   videoSrc={
                     carouselVideos[safeCurrentSlideIndex]?.video ??
                     carouselVideos[0]?.video ??
-                    ''
+                    ""
                   }
                   className="w-full h-full object-cover"
                 />
@@ -271,107 +291,193 @@ const HeroCarousel: React.FC = () => {
             <div className="relative z-10 h-full w-full flex items-center justify-center">
               <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-                  <motion.div
-                    className={`px-4 sm:px-0 relative z-10 ${
-                      currentSlide === 0 ? 'text-video-dark' : 
-                      currentSlide === 1 ? 'text-video-mixed' : 'text-video-light'
-                    }`}
-                    initial={{ opacity: 0, x: -50 }}
-                    animate={{
-                      opacity: 1,
-                      x: 0,
-                      transition: { duration: 0.8, delay: 0.2 }
-                    }}
-                  >
-                    <motion.div 
-                      className={`inline-flex items-center mb-6 px-6 py-2 rounded-full font-medium text-sm md:text-base shadow-md ${
-                        currentSlide === 0 ? 'bg-white/90 text-blue-900 border border-white/30' :
-                        currentSlide === 1 ? 'bg-blue-900/90 text-white border border-blue-300/30' :
-                        'bg-white/95 text-red-900 border border-white/30'
-                      }`}
-                      initial={{ opacity: 0, y: prefersReducedMotionRef.current ? 0 : -20 }}
-                      animate={{ 
-                        opacity: 1, 
-                        y: 0, 
-                        transition: { delay: prefersReducedMotionRef.current ? 0 : 0.4, duration: prefersReducedMotionRef.current ? 0.2 : 0.5 } 
-                      }}
-                    >
-                      <Check className="w-4 h-4 mr-2" />
-                      {currentSlideData.subtitle}
-                    </motion.div>
-                    
-                    <motion.h1 
-                      className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 sm:mb-6 leading-tight ${
-                        currentSlide === 0 ? 'text-white' :
-                        currentSlide === 1 ? 'text-white' :
-                        'text-white'
-                      }`}
-                      style={{
-                        textShadow: '0 2px 4px rgba(0,0,0,0.7)'
-                      }}
-                      initial={{ opacity: 0, y: prefersReducedMotionRef.current ? 0 : 20 }}
-                      animate={{ opacity: 1, y: 0, transition: { delay: prefersReducedMotionRef.current ? 0 : 0.3, duration: prefersReducedMotionRef.current ? 0.25 : 0.55 } }}
-                    >
-                      {currentSlideData.title}
-                    </motion.h1>
-                    
-                    <motion.p 
-                      className={`text-lg sm:text-xl md:text-2xl mb-8 leading-relaxed max-w-2xl ${
-                        currentSlide === 0 ? 'text-gray-100' :
-                        currentSlide === 1 ? 'text-gray-100' :
-                        'text-gray-100'
-                      }`}
-                      style={{
-                        textShadow: '0 1px 3px rgba(0,0,0,0.8)'
-                      }}
-                      initial={{ opacity: 0, y: prefersReducedMotionRef.current ? 0 : 10 }}
-                      animate={{ opacity: 1, y: 0, transition: { delay: prefersReducedMotionRef.current ? 0 : 0.5, duration: prefersReducedMotionRef.current ? 0.2 : 0.5 } }}
-                    >
-                      {currentSlideData.description}
-                    </motion.p>
-                    
+                  <AnimatePresence mode="wait">
                     <motion.div
-                      className="flex flex-wrap gap-4"
-                      initial={{ opacity: 0, y: prefersReducedMotionRef.current ? 0 : 20 }}
-                      animate={{ opacity: 1, y: 0, transition: { delay: prefersReducedMotionRef.current ? 0 : 0.7, duration: prefersReducedMotionRef.current ? 0.2 : 0.4 } }}
-                      onAnimationComplete={() => {
-                        // Schedule auto-advance only after CTA wrapper fully shown
-                        scheduleAdvanceAfterRemaining();
+                      key={`content-${currentSlide}`}
+                      className={`px-4 sm:px-0 relative z-10 ${
+                        currentSlide === 0
+                          ? "text-video-dark"
+                          : currentSlide === 1
+                          ? "text-video-mixed"
+                          : "text-video-light"
+                      }`}
+                      initial={{ opacity: 0 }}
+                      animate={{
+                        opacity: 1,
+                        transition: { duration: 0.5 },
                       }}
+                      exit={{ opacity: 0, transition: { duration: 0.3 } }}
                     >
-                      <a
-                        href={currentSlideData.ctaLink}
-                        className={`px-8 py-4 font-bold rounded-lg flex items-center justify-center gap-2 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 ${
-                          currentSlide === 0 ? 'bg-white hover:bg-gray-100 text-blue-900' :
-                          currentSlide === 1 ? 'bg-blue-600 hover:bg-blue-700 text-white' :
-                          'bg-white hover:bg-gray-100 text-red-900'
+                      {/* Subtitle - Appears FIRST with slide-in from left and fade */}
+                      <motion.div
+                        className={`inline-flex items-center mb-6 px-6 py-2 rounded-full font-medium text-sm md:text-base shadow-md ${
+                          currentSlide === 0
+                            ? "bg-white/90 text-video-dark-subtitle border border-white/30"
+                            : currentSlide === 1
+                            ? "bg-blue-900/90 text-video-mixed-subtitle border border-blue-300/30"
+                            : "bg-white/95 text-video-light-subtitle border border-white/30"
                         }`}
-                        style={{
-                          color: currentSlide === 0 ? 'rgb(59 130 246)' :
-                            currentSlide === 1 ? 'rgb(255 255 255)' :
-                            'rgb(239 68 68)'
+                        initial={{
+                          opacity: 0,
+                          x: prefersReducedMotionRef.current ? 0 : -60,
+                          scale: prefersReducedMotionRef.current ? 1 : 0.9,
+                        }}
+                        animate={{
+                          opacity: 1,
+                          x: 0,
+                          scale: 1,
+                          transition: {
+                            delay: prefersReducedMotionRef.current ? 0 : 0.3,
+                            duration: prefersReducedMotionRef.current
+                              ? 0.2
+                              : 0.7,
+                            ease: [0.25, 0.46, 0.45, 0.94], // easeOutQuad
+                          },
                         }}
                       >
-                        {currentSlideData.cta}
-                        <ChevronRight className="w-5 h-5" />
-                      </a>
-                      <a
-                        href="/contact"
-                        className={`px-6 py-3.5 border-2 font-medium rounded-lg flex items-center justify-center gap-2 transition-all duration-300 ${
-                          currentSlide === 0 ? 'border-white hover:border-blue-200 text-white hover:bg-white/10' :
-                          currentSlide === 1 ? 'border-white hover:border-blue-300 text-white hover:bg-white/10' :
-                          'border-white hover:border-red-200 text-white hover:bg-white/10'
+                        <Check className="w-4 h-4 mr-2" />
+                        {currentSlideData.subtitle}
+                      </motion.div>
+
+                      {/* Title - Appears SECOND with slide-up and scale */}
+                      <motion.h1
+                        className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 sm:mb-6 leading-tight ${
+                          currentSlide === 0
+                            ? "text-video-dark-text"
+                            : currentSlide === 1
+                            ? "text-video-mixed-text"
+                            : "text-video-light-text"
                         }`}
                         style={{
-                          color: currentSlide === 0 ? 'rgb(255 255 255)' :
-                            currentSlide === 1 ? 'rgb(255 255 255)' :
-                            'rgb(255 255 255)'
+                          textShadow: "0 2px 4px rgba(0,0,0,0.7)",
+                        }}
+                        initial={{
+                          opacity: 0,
+                          y: prefersReducedMotionRef.current ? 0 : 40,
+                          scale: prefersReducedMotionRef.current ? 1 : 0.95,
+                        }}
+                        animate={{
+                          opacity: 1,
+                          y: 0,
+                          scale: 1,
+                          transition: {
+                            delay: prefersReducedMotionRef.current ? 0 : 0.6,
+                            duration: prefersReducedMotionRef.current
+                              ? 0.25
+                              : 0.8,
+                            ease: [0.16, 1, 0.3, 1], // easeOutExpo
+                          },
                         }}
                       >
-                        Contact Us
-                      </a>
+                        {currentSlideData.title}
+                      </motion.h1>
+
+                      {/* Description - Appears THIRD with fade and slide-up */}
+                      <motion.p
+                        className={`text-lg md:text-xl mb-8 max-w-2xl ${
+                          currentSlide === 0
+                            ? "text-video-dark-description"
+                            : currentSlide === 1
+                            ? "text-video-mixed-description"
+                            : "text-video-light-description"
+                        }`}
+                        initial={{
+                          opacity: 0,
+                          y: prefersReducedMotionRef.current ? 0 : 30,
+                        }}
+                        animate={{
+                          opacity: 1,
+                          y: 0,
+                          transition: {
+                            delay: prefersReducedMotionRef.current ? 0 : 1.1,
+                            duration: prefersReducedMotionRef.current
+                              ? 0.2
+                              : 0.7,
+                            ease: [0.33, 1, 0.68, 1], // easeOutCubic
+                          },
+                        }}
+                      >
+                        {currentSlideData.description}
+                      </motion.p>
+
+                      {/* Buttons - Appear FOURTH with staggered entrance */}
+                      <motion.div
+                        className="flex flex-wrap gap-4"
+                        initial={{ opacity: 0 }}
+                        animate={{
+                          opacity: 1,
+                          transition: {
+                            delay: prefersReducedMotionRef.current ? 0 : 1.5,
+                            duration: 0.3,
+                          },
+                        }}
+                        onAnimationComplete={() => {
+                          // Schedule auto-advance only after CTA wrapper fully shown
+                          scheduleAdvanceAfterRemaining();
+                        }}
+                      >
+                        <motion.a
+                          href={currentSlideData.ctaLink}
+                          className={`px-8 py-4 font-bold rounded-lg flex items-center justify-center gap-2 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 ${
+                            currentSlide === 0
+                              ? "bg-video-dark-cta hover:bg-opacity-90 text-video-dark-ctaText"
+                              : currentSlide === 1
+                              ? "bg-video-mixed-cta hover:bg-opacity-90 text-video-mixed-ctaText"
+                              : "bg-video-light-cta hover:bg-opacity-90 text-video-light-ctaText"
+                          }`}
+                          initial={{
+                            opacity: 0,
+                            y: prefersReducedMotionRef.current ? 0 : 20,
+                            scale: prefersReducedMotionRef.current ? 1 : 0.9,
+                          }}
+                          animate={{
+                            opacity: 1,
+                            y: 0,
+                            scale: 1,
+                            transition: {
+                              delay: prefersReducedMotionRef.current ? 0 : 1.7,
+                              duration: 0.5,
+                              ease: [0.34, 1.56, 0.64, 1], // easeOutBack
+                            },
+                          }}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          {currentSlideData.cta}
+                          <ChevronRight className="w-5 h-5" />
+                        </motion.a>
+                        <motion.a
+                          href="/contact"
+                          className={`px-6 py-3.5 border-2 font-medium rounded-lg flex items-center justify-center gap-2 transition-all duration-300 ${
+                            currentSlide === 0
+                              ? "border-video-dark-text text-video-dark-text hover:bg-video-dark-cta/10"
+                              : currentSlide === 1
+                              ? "border-video-mixed-text text-video-mixed-text hover:bg-video-mixed-cta/10"
+                              : "border-video-light-text text-video-light-text hover:bg-video-light-cta/10"
+                          }`}
+                          initial={{
+                            opacity: 0,
+                            y: prefersReducedMotionRef.current ? 0 : 20,
+                            scale: prefersReducedMotionRef.current ? 1 : 0.9,
+                          }}
+                          animate={{
+                            opacity: 1,
+                            y: 0,
+                            scale: 1,
+                            transition: {
+                              delay: prefersReducedMotionRef.current ? 0 : 1.9,
+                              duration: 0.5,
+                              ease: [0.34, 1.56, 0.64, 1], // easeOutBack
+                            },
+                          }}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          Contact Us
+                        </motion.a>
+                      </motion.div>
                     </motion.div>
-                  </motion.div>
+                  </AnimatePresence>
                 </div>
               </div>
             </div>
@@ -383,9 +489,11 @@ const HeroCarousel: React.FC = () => {
       <motion.button
         onClick={prevSlide}
         className={`absolute left-4 top-1/2 transform -translate-y-1/2 z-20 backdrop-blur-sm p-3 rounded-full transition-all duration-300 group border ${
-          currentSlide === 0 ? 'bg-blue-800/80 hover:bg-blue-700/90 text-blue-100 border-blue-600/50 hover:border-blue-400/80' :
-          currentSlide === 1 ? 'bg-teal-600/80 hover:bg-teal-700/90 text-teal-100 border-teal-500/50 hover:border-teal-400/80' :
-          'bg-red-700/80 hover:bg-red-800/90 text-red-100 border-red-600/50 hover:border-red-400/80'
+          currentSlide === 0
+            ? "bg-blue-800/80 hover:bg-blue-700/90 text-blue-100 border-blue-600/50 hover:border-blue-400/80"
+            : currentSlide === 1
+            ? "bg-teal-600/80 hover:bg-teal-700/90 text-teal-100 border-teal-500/50 hover:border-teal-400/80"
+            : "bg-red-700/80 hover:bg-red-800/90 text-red-100 border-red-600/50 hover:border-red-400/80"
         }`}
         aria-label="Previous slide"
         whileHover={{ scale: 1.1 }}
@@ -396,19 +504,24 @@ const HeroCarousel: React.FC = () => {
       <motion.button
         onClick={nextSlide}
         className={`absolute right-4 top-1/2 transform -translate-y-1/2 z-20 backdrop-blur-sm p-3 rounded-full transition-all duration-300 group border shadow-lg ${
-          currentSlide === 0 ? 'bg-blue-800/90 hover:bg-blue-700/95 text-blue-50 border-blue-500/60 hover:border-blue-300/80' :
-          currentSlide === 1 ? 'bg-teal-600/90 hover:bg-teal-700/95 text-teal-50 border-teal-500/60 hover:border-teal-300/80' :
-          'bg-red-700/90 hover:bg-red-800/95 text-red-50 border-red-500/60 hover:border-red-300/80'
+          currentSlide === 0
+            ? "bg-blue-800/90 hover:bg-blue-700/95 text-blue-50 border-blue-500/60 hover:border-blue-300/80"
+            : currentSlide === 1
+            ? "bg-teal-600/90 hover:bg-teal-700/95 text-teal-50 border-teal-500/60 hover:border-teal-300/80"
+            : "bg-red-700/90 hover:bg-red-800/95 text-red-50 border-red-500/60 hover:border-red-300/80"
         }`}
         aria-label="Next slide"
-        whileHover={{ scale: 1.1, boxShadow: '0 0 15px rgba(255, 255, 255, 0.3)' }}
+        whileHover={{
+          scale: 1.1,
+          boxShadow: "0 0 15px rgba(255, 255, 255, 0.3)",
+        }}
         whileTap={{ scale: 0.95 }}
       >
         <ChevronRight className="w-6 h-6 group-hover:scale-110 transition-transform" />
       </motion.button>
 
       {/* Slide Indicators */}
-      <motion.div 
+      <motion.div
         className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20 flex space-x-3"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0, transition: { delay: 0.5 } }}
@@ -419,8 +532,8 @@ const HeroCarousel: React.FC = () => {
             onClick={() => goToSlide(index)}
             className={`w-3 h-3 rounded-full transition-all duration-300 ${
               index === safeCurrentSlideIndex
-                ? 'bg-yellow-400 scale-125'
-                : 'bg-white/50 hover:bg-white/75'
+                ? "bg-yellow-400 scale-125"
+                : "bg-white/50 hover:bg-white/75"
             }`}
             whileHover={{ scale: 1.2 }}
             whileTap={{ scale: 0.9 }}
@@ -430,7 +543,7 @@ const HeroCarousel: React.FC = () => {
       </motion.div>
 
       {/* Scroll Down Indicator */}
-      <motion.div
+      {/* <motion.div
         className="absolute bottom-8 right-8 z-20"
         initial={{ opacity: 0, y: 20 }}
         animate={{ 
@@ -456,7 +569,7 @@ const HeroCarousel: React.FC = () => {
             />
           </div>
         </motion.div>
-      </motion.div>
+      </motion.div> */}
     </div>
   );
 };

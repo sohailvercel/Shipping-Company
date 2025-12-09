@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Layout } from './components/Layout';
 import { LoadingSpinner } from './components/LoadingSpinner';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { AuthProvider } from './contexts/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
 
 // Lazy load pages
 const Home = React.lazy(() => import('./pages/Home'));
@@ -17,13 +19,23 @@ const BakshGroup = React.lazy(() => import('./pages/BakshGroup'));
 const YaaseenShippingPVT = React.lazy(() => import('./pages/YaaseenShippingPVT'));
 const UOSL = React.lazy(() => import('./pages/UOSL'));
 const Contact = React.lazy(() => import('./pages/Contact'));
-const EServices = React.lazy(() => import('./pages/EServices'));
+// const EServices = React.lazy(() => import('./pages/EServices'));
 const EServiceDetail = React.lazy(() => import('./pages/EServiceDetail'));
 const Tariffs = React.lazy(() => import('./pages/Tariffs'));
-const Schedule = React.lazy(() => import('./pages/Schedule'));
+// const Schedule = React.lazy(() => import('./pages/Schedule'));
 const NotFound = React.lazy(() => import('./pages/NotFound'));
-const Blogs = React.lazy(() => import('./pages/Blogs'));
+const News = React.lazy(() => import('./pages/News'));
+const PakistanInsights = React.lazy(() => import('./pages/PakistanInsights'));
+const KICT = React.lazy(() => import('./pages/terminals/KICT'));
+const SAPT = React.lazy(() => import('./pages/terminals/SAPT'));
+const KGTL = React.lazy(() => import('./pages/terminals/KGTL'));
+const QICT = React.lazy(() => import('./pages/terminals/QICT'));
+
 const Login = React.lazy(() => import('./pages/Login'));
+const AdminDashboard = React.lazy(() => import('./pages/AdminDashboard'));
+
+// const AdminSchedule = React.lazy(() => import('./pages/AdminSchedule'));
+
 
 const PageLoader: React.FC = () => (
   <div className="flex items-center justify-center min-h-screen">
@@ -59,10 +71,11 @@ const AnimatedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 function App() {
   return (
     <ErrorBoundary>
+      <AuthProvider>
       <Router>
         {/* ⚠️ Remove AuthProvider if it doesn't exist */}
         {/* <AuthProvider> */}
-        <div className="App min-h-screen bg-black text-white">
+        <div className="App min-h-screen">
 
           <Toaster
             position="top-right"
@@ -170,11 +183,11 @@ function App() {
                   }
                 />
                 <Route
-                  path="/blogs"
+                  path="/News"
                   element={
                     <Layout>
                       <AnimatedRoute>
-                        <Blogs />
+                        <News />
                       </AnimatedRoute>
                     </Layout>
                   }
@@ -189,6 +202,30 @@ function App() {
                     </Layout>
                   }
                 />
+                <Route
+                  path="/admin/dashboard"
+                  element={
+                    <ProtectedRoute requireAdmin={true}>
+                      <Layout>
+                        <AnimatedRoute>
+                          <AdminDashboard />
+                        </AnimatedRoute>
+                      </Layout>
+                    </ProtectedRoute>
+                  }
+                />
+                {/* <Route
+                  path="/admin/schedule"
+                  element={
+                    <ProtectedRoute>
+                      <Layout>
+                        <AnimatedRoute>
+                          <AdminSchedule />
+                        </AnimatedRoute>
+                      </Layout>
+                    </ProtectedRoute>
+                  }
+                /> */}
                 <Route
                   path="/quote"
                   element={
@@ -209,7 +246,7 @@ function App() {
                     </Layout>
                   }
                 />
-                <Route
+                {/* <Route
                   path="/services"
                   element={
                     <Layout>
@@ -218,7 +255,7 @@ function App() {
                       </AnimatedRoute>
                     </Layout>
                   }
-                />
+                /> */}
                 <Route
                   path="/services/:id"
                   element={
@@ -243,6 +280,56 @@ function App() {
                   }
                 />
                 <Route
+                  path="/pakistan-insights"
+                  element={
+                    <Layout>
+                      <AnimatedRoute>
+                        <PakistanInsights />
+                      </AnimatedRoute>
+                    </Layout>
+                  }
+                />  
+                <Route
+                  path="/terminals/kict"
+                  element={
+                    <Layout>
+                      <AnimatedRoute>
+                        <KICT />
+                      </AnimatedRoute>
+                    </Layout>
+                  }
+                />  
+                <Route
+                  path="/terminals/kgtl"
+                  element={
+                    <Layout>
+                      <AnimatedRoute>
+                        <KGTL />
+                      </AnimatedRoute>
+                    </Layout>
+                  }
+                />  
+                <Route
+                  path="/terminals/sapt"
+                  element={
+                    <Layout>
+                      <AnimatedRoute>
+                        <SAPT />
+                      </AnimatedRoute>
+                    </Layout>
+                  }
+                />  
+                <Route
+                  path="/terminals/qict"
+                  element={
+                    <Layout>
+                      <AnimatedRoute>
+                        <QICT />
+                      </AnimatedRoute>
+                    </Layout>
+                  }
+                />
+                {/* <Route
                   path="/schedule"
                   element={
                     <Layout>
@@ -251,7 +338,7 @@ function App() {
                       </AnimatedRoute>
                     </Layout>
                   }
-                />
+                /> */}
 
                 <Route path="/home" element={<Navigate to="/" replace />} />
 
@@ -269,8 +356,9 @@ function App() {
             </AnimatePresence>
           </Suspense>
         </div>
-        {/* </AuthProvider> */}
+        
       </Router>
+      </AuthProvider>
     </ErrorBoundary>
   );
 }

@@ -1,19 +1,33 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  MapPin, 
-  Phone, 
-  Mail, 
-  Clock, 
+import {
+  MapPin,
+  Phone,
+  Mail,
+  Clock,
   Send,
-  User,
   Building2,
   Globe,
   MessageCircle,
   CheckCircle,
-  ExternalLink,
-  Calendar
+  ExternalLink
 } from 'lucide-react';
+
+interface Office {
+  id: string;
+  name: string;
+  address: string;
+  phone: string;
+  fax?: string;
+  email: string;
+  hours: string;
+  coordinates: {
+    lat: number;
+    lng: number;
+  };
+}
+
 const Contact: React.FC = () => {
   const [selectedOffice, setSelectedOffice] = useState('karachi');
   const [contactForm, setContactForm] = useState({
@@ -27,31 +41,25 @@ const Contact: React.FC = () => {
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const offices = [
+  const offices: Office[] = [
     {
       id: 'karachi',
       name: 'Karachi Office (Head Office)',
-      address: '10th Floor, Sheikh Sultan Trust Bldg, Beaumont Road, Karachi, Pakistan',
+      address: '10th Floor, Sheikh Sultan Trust Building, Beaumont Road, Karachi',
       phone: '+92-21-35688057-59, 35693004, 6, 7',
       fax: '+92-21-35683051, 35687367',
       email: 'info@yslpk.com',
-      hours: 'Monday - Saturday: 9:00 AM - 6:00 PM',
-      coordinates: { lat: 24.8607, lng: 67.0011 },
-      services: ['All Services', 'Head Office Operations', 'Management', 'OOCL Partnership'],
-      manager: 'General Manager',
-      departments: ['Operations', 'Sales', 'Documentation', 'Finance', 'Customer Service']
+      hours: 'Monday - Saturday: 9:00 AM - 5:00 PM',
+      coordinates: { lat: 24.8607, lng: 67.0011 }
     },
     {
       id: 'lahore',
       name: 'Lahore Office',
-      address: 'Grand Square Mall, Office no E9C/2, 9th Floor, Gulberg III Lahore',
+      address: 'Office no E9C/2, 9th Floor,Grand Square Mall, Gulberg III Lahore',
       phone: '+92-42-35764134-5, 35772049',
       email: 'lahore@yslpk.com',
-      hours: 'Monday - Saturday: 9:00 AM - 6:00 PM',
-      coordinates: { lat: 31.5204, lng: 74.3587 },
-      services: ['Freight Forwarding', 'Container Services', 'Documentation', 'Customer Support'],
-      manager: 'Regional Manager - Punjab',
-      departments: ['Operations', 'Sales', 'Documentation', 'Customer Service']
+      hours: 'Monday - Saturday: 9:00 AM - 5:00 PM',
+      coordinates: { lat: 31.5204, lng: 74.3587 }
     },
     {
       id: 'multan',
@@ -59,11 +67,8 @@ const Contact: React.FC = () => {
       address: '21 U Business City Plaza Bosan Road Multan',
       phone: '+92-61-6223356, 6223357',
       email: 'multan@yslpk.com',
-      hours: 'Monday - Saturday: 9:00 AM - 6:00 PM',
-      coordinates: { lat: 30.1575, lng: 71.5249 },
-      services: ['Local Operations', 'Customer Support', 'Documentation'],
-      manager: 'Branch Manager',
-      departments: ['Operations', 'Customer Service', 'Documentation']
+      hours: 'Monday - Saturday: 9:00 AM - 5:00 PM',
+      coordinates: { lat: 30.1575, lng: 71.5249 }
     },
     {
       id: 'faisalabad',
@@ -71,11 +76,8 @@ const Contact: React.FC = () => {
       address: '22, Chenab Market, Madina Town, Faisalabad, Pakistan',
       phone: '+92-41-8532256-7',
       email: 'faisalabad@yslpk.com',
-      hours: 'Monday - Saturday: 9:00 AM - 6:00 PM',
-      coordinates: { lat: 31.4504, lng: 73.1350 },
-      services: ['Textile Industry Support', 'Export Services', 'Documentation'],
-      manager: 'Branch Manager',
-      departments: ['Operations', 'Sales', 'Documentation']
+      hours: 'Monday - Saturday: 9:00 AM - 5:00 PM',
+      coordinates: { lat: 31.4504, lng: 73.1350 }
     }
   ];
 
@@ -84,41 +86,80 @@ const Contact: React.FC = () => {
     'Ocean Freight (FCL/LCL)',
     'Freight Forwarding',
     'Container Services',
-    'Ship Husbandry',
+    'Vessel Handling',
     'Chartering & Brokerage',
     'Project Cargo',
     'General Inquiry',
     'Other'
   ];
 
-  const currentOffice = offices.find(office => office.id === selectedOffice)!;
+  // Safely get the current office with type assertion
+  const currentOffice = offices.find(office => office.id === selectedOffice) as Office;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Safely get office name
+  const getOfficeName = () => {
+    const parts = currentOffice.name.split('(');
+    return parts[0]?.trim() || '';
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitted(true);
-    // Handle form submission here
-    setTimeout(() => {
-      setIsSubmitted(false);
-      setContactForm({
-        name: '',
-        email: '',
-        phone: '',
-        company: '',
-        subject: '',
-        message: '',
-        serviceType: ''
+
+    try {
+      // 1. Get API Key from server
+      const apiUrl = import.meta.env.VITE_API_BASE || import.meta.env.VITE_API_URL?.replace(/\/api$/, '') || 'http://localhost:5000';
+      const configResponse = await axios.get(`${apiUrl}/api/contact/config`);
+      const apiKey = configResponse.data.apiKey;
+
+      if (!apiKey) {
+        throw new Error('Could not retrieve API key from server');
+      }
+
+      // 2. Submit directly to Web3Forms
+      const response = await axios.post("https://api.web3forms.com/submit", {
+        access_key: apiKey,
+        ...contactForm,
+        subject: `New Contact Message: ${contactForm.subject}`
       });
-    }, 3000);
+
+      if (response.status === 200) {
+        setIsSubmitted(true);
+        console.log('Form submitted:', response.data);
+
+        // Reset form after 3 seconds
+        setTimeout(() => {
+          setIsSubmitted(false);
+          setContactForm({
+            name: '',
+            email: '',
+            phone: '',
+            company: '',
+            subject: '',
+            message: '',
+            serviceType: ''
+          });
+        }, 3000);
+      }
+    } catch (error: any) {
+      console.error('Error submitting form:', error);
+      alert(`Error: ${error.response?.data?.message || error.message || 'Submission failed'}`);
+    }
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <section className="relative text-white py-16 overflow-hidden bg-blue">
-        <div className="absolute inset-0 bg-blue-500"></div>
-        <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full -mr-48 -mt-48" />
-        <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full -ml-32 -mb-32" />
-        
+      {/* Header Section */}
+      <section className="relative text-white py-16 overflow-hidden" style={{
+        backgroundImage: 'url(https://images.unsplash.com/photo-1505839673365-e3971f8d9184?auto=format&fit=crop&w=1600&q=80)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}>
+        {/* Dark overlay */}
+        <div className="absolute inset-0 bg-gray-900/70"></div>
+        <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full -mr-48 -mt-48 backdrop-blur-sm" />
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full -ml-32 -mb-32 backdrop-blur-sm" />
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div
             className="text-center"
@@ -132,10 +173,10 @@ const Contact: React.FC = () => {
               </div>
             </div>
             <h1 className="text-4xl lg:text-5xl font-bold mb-6">Contact Us</h1>
-            <p className="text-xl text-blue-100 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl text-white/90 max-w-3xl mx-auto leading-relaxed">
               Get in touch with our maritime experts across Pakistan. We're here to help with all your shipping and logistics needs.
             </p>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
               <motion.div
                 className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20"
@@ -144,10 +185,10 @@ const Contact: React.FC = () => {
                 transition={{ duration: 0.6, delay: 0.2 }}
               >
                 <Phone className="w-8 h-8 text-yellow-400 mx-auto mb-3" />
-                <h3 className="font-semibold mb-2">24/7 Support</h3>
+                <h3 className="font-semibold mb-2 text-white">24/7 Support</h3>
                 <p className="text-blue-100 text-sm">Round-the-clock customer assistance</p>
               </motion.div>
-              
+
               <motion.div
                 className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20"
                 initial={{ opacity: 0, y: 20 }}
@@ -155,10 +196,10 @@ const Contact: React.FC = () => {
                 transition={{ duration: 0.6, delay: 0.3 }}
               >
                 <MapPin className="w-8 h-8 text-yellow-400 mx-auto mb-3" />
-                <h3 className="font-semibold mb-2">4 Locations</h3>
+                <h3 className="font-semibold mb-2 text-white">4 Locations</h3>
                 <p className="text-blue-100 text-sm">Offices across Pakistan's major cities</p>
               </motion.div>
-              
+
               <motion.div
                 className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20"
                 initial={{ opacity: 0, y: 20 }}
@@ -166,7 +207,7 @@ const Contact: React.FC = () => {
                 transition={{ duration: 0.6, delay: 0.4 }}
               >
                 <Globe className="w-8 h-8 text-yellow-400 mx-auto mb-3" />
-                <h3 className="font-semibold mb-2">Global Network</h3>
+                <h3 className="font-semibold mb-2 text-white">Global Network</h3>
                 <p className="text-blue-100 text-sm">Worldwide shipping connections</p>
               </motion.div>
             </div>
@@ -174,6 +215,7 @@ const Contact: React.FC = () => {
         </div>
       </section>
 
+      {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Contact Form */}
@@ -184,7 +226,7 @@ const Contact: React.FC = () => {
           >
             <div className="bg-white rounded-2xl shadow-xl p-8">
               <div className="flex items-center mb-6">
-                <Send className="w-8 h-8 text-primary-600 mr-3" />
+                <Send className="w-8 h-8 text-blue-600 mr-3" />
                 <h2 className="text-2xl font-bold text-gray-900">Send Us a Message</h2>
               </div>
 
@@ -203,100 +245,103 @@ const Contact: React.FC = () => {
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label htmlFor="name" className="form-label">Full Name *</label>
+                      <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
                       <input
                         id="name"
                         type="text"
-                        required
-                        className="input"
                         value={contactForm.name}
-                        onChange={(e) => setContactForm({...contactForm, name: e.target.value})}
+                        onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
+                        className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
+                        required
                       />
                     </div>
-                    
+
                     <div>
-                      <label htmlFor="email" className="form-label">Email Address *</label>
+                      <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email Address *</label>
                       <input
                         id="email"
                         type="email"
-                        required
-                        className="input"
                         value={contactForm.email}
-                        onChange={(e) => setContactForm({...contactForm, email: e.target.value})}
+                        onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
+                        className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
+                        required
                       />
                     </div>
                   </div>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label htmlFor="phone" className="form-label">Phone Number</label>
+                      <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
                       <input
                         id="phone"
                         type="tel"
-                        className="input"
                         value={contactForm.phone}
-                        onChange={(e) => setContactForm({...contactForm, phone: e.target.value})}
+                        onChange={(e) => setContactForm({ ...contactForm, phone: e.target.value })}
+                        className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
                       />
                     </div>
-                    
+
                     <div>
-                      <label htmlFor="company" className="form-label">Company</label>
+                      <label htmlFor="company" className="block text-sm font-medium text-gray-700 mb-1">Company</label>
                       <input
                         id="company"
                         type="text"
-                        className="input"
                         value={contactForm.company}
-                        onChange={(e) => setContactForm({...contactForm, company: e.target.value})}
+                        onChange={(e) => setContactForm({ ...contactForm, company: e.target.value })}
+                        className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
                       />
                     </div>
                   </div>
-                  
+
                   <div>
-                    <label htmlFor="serviceType" className="form-label">Service Interest</label>
-                    <select
-                      id="serviceType"
-                      className="input"
-                      value={contactForm.serviceType}
-                      onChange={(e) => setContactForm({...contactForm, serviceType: e.target.value})}
-                    >
-                      <option value="">Select a service</option>
-                      {serviceTypes.map((service) => (
-                        <option key={service} value={service}>{service}</option>
-                      ))}
-                    </select>
-                  </div>
-                  
-                  <div>
-                    <label htmlFor="subject" className="form-label">Subject *</label>
+                    <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-1">Subject *</label>
                     <input
                       id="subject"
                       type="text"
-                      required
-                      className="input"
                       value={contactForm.subject}
-                      onChange={(e) => setContactForm({...contactForm, subject: e.target.value})}
+                      onChange={(e) => setContactForm({ ...contactForm, subject: e.target.value })}
+                      className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
+                      required
                     />
                   </div>
-                  
+
                   <div>
-                    <label htmlFor="message" className="form-label">Message *</label>
+                    <label htmlFor="serviceType" className="block text-sm font-medium text-gray-700 mb-1">Service Type *</label>
+                    <select
+                      id="serviceType"
+                      value={contactForm.serviceType}
+                      onChange={(e) => setContactForm({ ...contactForm, serviceType: e.target.value })}
+                      className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
+                      required
+                    >
+                      <option value="">Select a service</option>
+                      {serviceTypes.map((service) => (
+                        <option key={service} value={service}>
+                          {service}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">Message *</label>
                     <textarea
                       id="message"
-                      rows={6}
-                      required
-                      className="input w-full"
-                      placeholder="Please describe your requirements or inquiry in detail..."
+                      rows={4}
                       value={contactForm.message}
-                      onChange={(e) => setContactForm({...contactForm, message: e.target.value})}
-                    />
+                      onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
+                      className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
+                      required
+                    ></textarea>
                   </div>
-                  
+
                   <motion.button
                     type="submit"
-                    className="btn btn-primary btn-lg w-full"
+                    className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 transition duration-200 flex items-center justify-center"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
+                    <Send className="w-5 h-5 mr-2" />
                     Send Message
                   </motion.button>
                 </form>
@@ -310,9 +355,9 @@ const Contact: React.FC = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <div className="bg-white rounded-2xl shadow-xl p-8">
+            <div className="bg-white rounded-2xl shadow-xl p-8 h-full">
               <div className="flex items-center mb-6">
-                <Building2 className="w-8 h-8 text-primary-600 mr-3" />
+                <Building2 className="w-8 h-8 text-blue-600 mr-3" />
                 <h2 className="text-2xl font-bold text-gray-900">Our Offices</h2>
               </div>
 
@@ -322,11 +367,10 @@ const Contact: React.FC = () => {
                   <button
                     key={office.id}
                     onClick={() => setSelectedOffice(office.id)}
-                    className={`p-3 rounded-lg text-sm font-medium transition-all duration-200 ${
-                      selectedOffice === office.id
-                        ? 'bg-primary-100 text-primary-700 border border-primary-200'
+                    className={`p-3 rounded-lg text-sm font-medium transition-all duration-200 ${selectedOffice === office.id
+                        ? 'bg-blue-100 text-blue-700 border border-blue-200'
                         : 'bg-gray-50 text-gray-700 hover:bg-gray-100 border border-transparent'
-                    }`}
+                      }`}
                   >
                     {office.name.split(' ')[0]}
                   </button>
@@ -342,101 +386,91 @@ const Contact: React.FC = () => {
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <div className="border border-gray-200 rounded-xl p-6">
-                    <h3 className="text-xl font-bold text-gray-900 mb-4">
-                      {currentOffice.name}
-                    </h3>
-                    
-                    <div className="space-y-4">
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">{currentOffice.name}</h3>
+                      <p className="text-gray-600">{currentOffice.address}</p>
+                    </div>
+
+                    <div className="space-y-3">
                       <div className="flex items-start">
-                        <MapPin className="w-5 h-5 text-gray-400 mr-3 mt-0.5 flex-shrink-0" />
+                        <Phone className="w-5 h-5 text-gray-500 mt-0.5 mr-3 flex-shrink-0" />
                         <div>
-                          <p className="text-gray-600">{currentOffice.address}</p>
+                          <p className="text-sm font-medium text-gray-900">Phone</p>
+                          <p className="text-gray-600">{currentOffice.phone}</p>
+                          {currentOffice.fax && (
+                            <p className="text-gray-600">Fax: {currentOffice.fax}</p>
+                          )}
                         </div>
                       </div>
-                      
-                      <div className="flex items-center">
-                        <Phone className="w-5 h-5 text-gray-400 mr-3 flex-shrink-0" />
-                        <a href={`tel:${currentOffice.phone.split(',')[0]}`} className="text-primary-600 hover:text-primary-700">
-                          {currentOffice.phone}
-                        </a>
-                      </div>
-                      
-                      {currentOffice.fax && (
-                        <div className="flex items-center">
-                          <Phone className="w-5 h-5 text-gray-400 mr-3 flex-shrink-0" />
-                          <span className="text-gray-600">Fax: {currentOffice.fax}</span>
-                        </div>
-                      )}
-                      
-                      <div className="flex items-center">
-                        <Mail className="w-5 h-5 text-gray-400 mr-3 flex-shrink-0" />
-                        <a href={`mailto:${currentOffice.email}`} className="text-primary-600 hover:text-primary-700">
-                          {currentOffice.email}
-                        </a>
-                      </div>
-                      
-                      <div className="flex items-center">
-                        <Clock className="w-5 h-5 text-gray-400 mr-3 flex-shrink-0" />
-                        <span className="text-gray-600">{currentOffice.hours}</span>
-                      </div>
-                      
+
                       <div className="flex items-start">
-                        <User className="w-5 h-5 text-gray-400 mr-3 mt-0.5 flex-shrink-0" />
-                        <span className="text-gray-600">{currentOffice.manager}</span>
+                        <Mail className="w-5 h-5 text-gray-500 mt-0.5 mr-3 flex-shrink-0" />
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">Email</p>
+                          <a href={`mailto:${currentOffice.email}`} className="text-blue-600 hover:underline">
+                            {currentOffice.email}
+                          </a>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start">
+                        <Clock className="w-5 h-5 text-gray-500 mt-0.5 mr-3 flex-shrink-0" />
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">Working Hours</p>
+                          <p className="text-gray-600">{currentOffice.hours}</p>
+                        </div>
                       </div>
                     </div>
-                    
-                    <div className="mt-6">
-                      <h4 className="font-semibold text-gray-900 mb-3">Services Available</h4>
-                      <div className="flex flex-wrap gap-2">
-                        {currentOffice.services.map((service) => (
-                          <span key={service} className="px-2 py-1 bg-primary-50 text-primary-700 text-xs rounded-md">
-                            {service}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                    
-                    <div className="mt-6">
-                      <h4 className="font-semibold text-gray-900 mb-3">Departments</h4>
-                      <div className="flex flex-wrap gap-2">
-                        {currentOffice.departments.map((dept) => (
-                          <span key={dept} className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-md">
-                            {dept}
-                          </span>
-                        ))}
-                      </div>
-                      
-                      {/* Google Maps Link */}
-                      <div className="mt-8">
-                        <h4 className="font-semibold text-gray-900 mb-3 flex items-center">
-                          <MapPin className="w-5 h-5 mr-2 text-primary-600" />
-                          Location on Map
-                        </h4>
-                        <a 
-                          href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(currentOffice.address)}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="block group"
+
+                    {/* Google Maps Link */}
+                    <div className="mt-8">
+                      <h4 className="font-semibold text-gray-900 mb-3 flex items-center">
+                        <MapPin className="w-5 h-5 mr-2 text-blue-600" />
+                        Location on Map
+                      </h4>
+                      <a
+                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(currentOffice.address)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block group relative rounded-lg overflow-hidden border border-gray-200 h-48"
+                      >
+                        <div
+                          className="absolute inset-0 bg-cover bg-center transition-transform duration-300 group-hover:scale-105"
+                          style={{
+                            backgroundImage: `url('/images/${currentOffice.id}.jpg')`,
+                            filter: 'brightness(0.9)',
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center',
+                            backgroundRepeat: 'no-repeat'
+                          }}
                         >
-                          <div className="overflow-hidden rounded-lg border border-gray-200 bg-gray-100">
-                            <div className="relative h-48 bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center">
-                              <div className="text-center p-4">
-                                <MapPin className="w-12 h-12 mx-auto text-primary-500 mb-2" />
-                                <p className="text-gray-700 font-medium">View Location on Map</p>
-                                <p className="text-gray-500 text-sm mt-1">{currentOffice?.name?.split('(')[0]?.trim() || 'Office Location'}</p>
-                              </div>
-                              <div className="absolute inset-0 bg-grid-gray-200 [mask-image:linear-gradient(0deg,white,transparent_20%)]" />
-                              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity bg-gradient-to-t from-black/20 to-transparent flex items-end p-4">
-                                <span className="bg-white/90 text-gray-800 px-3 py-1.5 rounded-full text-sm font-medium shadow-sm">
-                                  View on Google Maps <ExternalLink className="w-3 h-3 ml-1 inline-block" />
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                        </a>
-                      </div>
+                          <div className="absolute inset-0 bg-black/10" />
+                        </div>
+                        <div className="relative h-full flex flex-col items-center justify-center text-center p-4">
+                          <MapPin className="w-8 h-8 text-white mb-2 drop-shadow-md" />
+                          <p className="text-white font-medium text-lg drop-shadow-md">View on Map</p>
+                          <p className="text-white/90 text-sm mt-1 drop-shadow">
+                            {getOfficeName()}
+                          </p>
+                          <span className="mt-3 bg-white/90 text-gray-800 px-3 py-1.5 rounded-full text-sm font-medium shadow-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                            Open in Google Maps <ExternalLink className="w-3 h-3 ml-1 inline-block" />
+                          </span>
+                        </div>
+                        <img
+                          src={`/images/${currentOffice.id}.jpg`}
+                          alt=""
+                          className="hidden"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            const parent = target.parentElement;
+                            const bgDiv = parent?.querySelector('div[style*="backgroundImage"]') as HTMLElement;
+                            if (bgDiv) {
+                              bgDiv.style.backgroundImage = 'url(\'/images/port-image.jpg\')';
+                            }
+                          }}
+                        />
+                      </a>
                     </div>
                   </div>
                 </motion.div>
@@ -444,115 +478,6 @@ const Contact: React.FC = () => {
             </div>
           </motion.div>
         </div>
-
-        {/* Quick Contact Options */}
-        <motion.div
-          className="mt-16"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-        >
-          <div className="bg-gradient-to-r from-primary-600 to-blue-700 rounded-3xl p-8 lg:p-12 text-white relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-32 -mt-32" />
-            <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full -ml-24 -mb-24" />
-            
-            <div className="relative z-10">
-              <div className="text-center mb-12">
-                <h2 className="text-3xl lg:text-4xl font-bold mb-6">
-                  Need Immediate Assistance?
-                </h2>
-                <p className="text-xl text-blue-100">
-                  Choose the best way to reach us for your specific needs
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <motion.div
-                  className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center border border-white/20"
-                  whileHover={{ scale: 1.05, y: -5 }}
-                >
-                  <Phone className="w-12 h-12 text-yellow-400 mx-auto mb-4" />
-                  <h3 className="text-xl font-bold mb-3">Call Us</h3>
-                  <p className="text-blue-100 mb-4 text-sm">
-                    Speak directly with our experts for immediate assistance
-                  </p>
-                  <a
-                    href="tel:+922135688057"
-                    className="btn bg-white text-primary-600 hover:bg-gray-100 btn-sm w-full"
-                  >
-                    Call Now
-                  </a>
-                </motion.div>
-
-                <motion.div
-                  className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center border border-white/20"
-                  whileHover={{ scale: 1.05, y: -5 }}
-                >
-                  <MessageCircle className="w-12 h-12 text-yellow-400 mx-auto mb-4" />
-                  <h3 className="text-xl font-bold mb-3">WhatsApp</h3>
-                  <p className="text-blue-100 mb-4 text-sm">
-                    Quick responses and easy document sharing
-                  </p>
-                  <a
-                    href="https://wa.me/923568805759"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn bg-white text-primary-600 hover:bg-gray-100 btn-sm w-full inline-flex items-center justify-center"
-                  >
-                    Chat on WhatsApp
-                    <ExternalLink className="w-4 h-4 ml-2" />
-                  </a>
-                </motion.div>
-
-                <motion.div
-                  className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center border border-white/20"
-                  whileHover={{ scale: 1.05, y: -5 }}
-                >
-                  <Calendar className="w-12 h-12 text-yellow-400 mx-auto mb-4" />
-                  <h3 className="text-xl font-bold mb-3">Schedule Meeting</h3>
-                  <p className="text-blue-100 mb-4 text-sm">
-                    Book a consultation with our specialists
-                  </p>
-                  <a
-                    href="https://outlook.office.com/calendar/0/deeplink/compose?path=/calendar/action/compose&rru=addevent&subject=Meeting%20Request&startdt=2025-09-16T10:00:00&enddt=2025-09-16T11:00:00&body=Hello%20Yaaseen%20Shipping%20Team%2C%0A%0AI%20would%20like%20to%20schedule%20a%20meeting%20to%20discuss%20my%20requirements.%0A%0ABest%20regards%2C"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn bg-white text-primary-600 hover:bg-gray-100 btn-sm w-full inline-flex items-center justify-center"
-                  >
-                    Schedule Now
-                    <ExternalLink className="w-4 h-4 ml-2" />
-                  </a>
-                </motion.div>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Emergency Contact */}
-        <motion.div
-          className="mt-8 bg-red-50 border border-red-200 rounded-xl p-6"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.6 }}
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <div className="bg-red-100 p-2 rounded-full mr-4">
-                <Phone className="w-6 h-6 text-red-600" />
-              </div>
-              <div>
-                <h3 className="font-bold text-red-800">24/7 Emergency Line</h3>
-                <p className="text-red-600 text-sm">For urgent shipment issues and emergencies</p>
-              </div>
-            </div>
-            <a
-              href="tel:+922135688057"
-              className="btn bg-red-600 text-white hover:bg-red-700 btn-sm"
-            >
-              Emergency Contact
-            </a>
-          </div>
-        </motion.div>
       </div>
     </div>
   );

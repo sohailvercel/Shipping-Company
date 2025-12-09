@@ -12,19 +12,20 @@ interface CarouselMedia {
 export const carouselVideos: CarouselMedia[] = [
   {
     type: 'video',
-    video: '/videos/2.mp4',
+    video: '/videos/3.mp4',
     fallback: '',
     description: 'Large container ship navigating through ocean waters'
   },
   {
     type: 'video',
-    video: '/videos/3.mp4',
+    video: '/videos/1.mp4',
     fallback: '',
     description: 'Aerial view of container ship with colorful containers'
   },
   {
-    type: 'image',
-    image: '/images/port-image.jpg',
+    type: 'video',
+    video: '/videos/2.mp4',
+    fallback: '',
     description: 'Vibrant commercial port with shipping containers'
   }
 ];

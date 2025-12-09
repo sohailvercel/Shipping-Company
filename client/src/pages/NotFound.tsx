@@ -1,7 +1,7 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Ship, Home, ArrowLeft } from 'lucide-react';
+import React from "react";
+import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import { Ship, Home } from "lucide-react";
 
 const NotFound: React.FC = () => {
   return (
@@ -14,7 +14,9 @@ const NotFound: React.FC = () => {
         >
           <Ship className="mx-auto h-20 w-20 text-primary-600" />
           <h1 className="mt-6 text-6xl font-bold text-gray-900">404</h1>
-          <h2 className="mt-2 text-3xl font-bold text-gray-900">Page not found</h2>
+          <h2 className="mt-2 text-3xl font-bold text-gray-900">
+            Page not found
+          </h2>
           <p className="mt-2 text-sm text-gray-600">
             Sorry, we couldn't find the page you're looking for.
           </p>

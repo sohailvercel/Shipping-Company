@@ -143,8 +143,8 @@ const ServicesShowcase: React.FC = () => {
       description: 'Premium services for unique maritime requirements',
       services: [
         {
-          id: 'ship-husbandry',
-          title: 'Ship Husbandry',
+          id: 'vessel-handling',
+          title: 'Vessel Handling',
           description: 'Complete vessel support and maintenance services',
           icon: Anchor,
           features: ['Vessel handling', 'Ship supply', 'Crew services', 'Port coordination'],

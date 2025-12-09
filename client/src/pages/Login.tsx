@@ -9,7 +9,8 @@ import {
   Fingerprint,
   Ship
 } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 const Login: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -22,6 +23,8 @@ const Login: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const navigate = useNavigate();
+  const location = useLocation();
+  const { login } = useAuth();
 
   // Background placeholder — replace with your real variable or static image
   // const pageBackgrounds = {
@@ -75,12 +78,12 @@ const Login: React.FC = () => {
 
     setIsLoading(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      console.log('Login successful', formData);
-      navigate('/dashboard');
+      await login(formData.email, formData.password);
+      const state = location.state as { from?: { pathname: string } } | undefined;
+      const redirectTo = state?.from?.pathname || '/admin/dashboard';
+      navigate(redirectTo, { replace: true });
     } catch (err) {
-      console.error('Login failed', err);
+      setErrors(prev => ({ ...prev, form: 'Invalid email or password' }));
     } finally {
       setIsLoading(false);
     }
@@ -100,10 +103,13 @@ const Login: React.FC = () => {
             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center shadow-lg mb-4">
               <Ship className="w-8 h-8 text-white" />
             </div>
-            <h1 className="text-3xl font-bold text-black drop-shadow-md">Welcome Back</h1>
+            <h1 className="text-3xl font-bold text-black drop-shadow-md">Welcome</h1>
           </div>
 
           <motion.form onSubmit={handleSubmit}>
+            {errors.form && (
+              <p className="mb-4 text-sm text-red-600">{errors.form}</p>
+            )}
             {/* Email */}
             <div className="mb-4">
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
@@ -159,7 +165,7 @@ const Login: React.FC = () => {
               {errors.password && <p className="mt-1 text-sm text-red-600">{errors.password}</p>}
             </div>
 
-            {/* Remember me */}
+            {/* Remember me
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center">
                 <input
@@ -177,7 +183,7 @@ const Login: React.FC = () => {
               <Link to="/forgot-password" className="text-sm text-blue-600 hover:text-blue-700 font-medium">
                 Forgot password?
               </Link>
-            </div>
+            </div> */}
 
             {/* Submit */}
             <motion.button
@@ -201,12 +207,12 @@ const Login: React.FC = () => {
             </motion.button>
 
             {/* Sign up link */}
-            <p className="mt-6 text-center text-sm text-gray-600">
+            {/* <p className="mt-6 text-center text-sm text-gray-600">
               Don’t have an account?{' '}
               <Link to="/register" className="font-medium text-blue-600 hover:text-blue-700">
                 Sign up here
               </Link>
-            </p>
+            </p> */}
           </motion.form>
         </motion.div>
       </div>

@@ -1,399 +1,255 @@
-# 🚢 Vessel Tracking System
+# Shipping Line Application
 
-A comprehensive real-time vessel tracking and management system built with modern web technologies. This system provides live tracking, route management, analytics, and administrative controls for maritime operations.
+A comprehensive shipping line management application with a React frontend and Node.js backend, featuring admin authentication and content management capabilities.
 
-## 🚢 Enhanced Tracking Features
+## 🚀 Features
 
-### Real-time Vessel Tracking
-- **Live status updates** with WebSocket integration
-- **Route progress monitoring** with visual timeline
-- **Port arrival/departure management** with automated notifications
-- **Multi-status tracking**: In Transit, At Port, Awaiting Departure, Delayed, Completed
-- **Interactive vessel details** with expandable route information
+### Frontend (React + TypeScript)
+- **Modern UI**: Built with React, TypeScript, Tailwind CSS, and Framer Motion
+- **Responsive Design**: Mobile-first design that works on all devices
+- **Authentication**: JWT-based login system with protected routes
+- **Admin Dashboard**: Comprehensive admin interface for content management
+- **Interactive Components**: Animated carousels, galleries, and forms
 
-### Advanced Analytics Dashboard
-- **Performance metrics** with route efficiency analysis
-- **Port utilization statistics** and dwell time tracking
-- **Vessel efficiency monitoring** with on-time performance
-- **Interactive charts** and visual data representation
-- **Time-based filtering** (7 days, 30 days, 90 days, 1 year)
+### Backend (Node.js + Express + MongoDB)
+- **RESTful API**: Complete API with authentication and CRUD operations
+- **Database**: MongoDB with Mongoose ODM
+- **Security**: JWT authentication, password hashing, rate limiting, CORS
+- **File Upload**: Support for images and PDF uploads
+- **Admin Management**: Role-based access control
 
-### Administrative Controls
-- **Admin dashboard** with comprehensive vessel monitoring
-- **Bulk operations** for efficient fleet management
-- **Status override capabilities** for managers and admins
-- **Vessel archiving** with automated cleanup
-- **Priority-based vessel management**
+### Admin Features (Login Required)
+1. **Gallery Management**: Upload and organize images by categories
+2. **Blog Management**: Create and manage blog posts with rich content
+3. **Tariff Management**: Upload and manage PDF tariff documents
+4. **Vessel Schedule Management**: Create and manage vessel schedules with port details
 
-### Audit Trail & Compliance
-- **Comprehensive audit logging** for all vessel operations
-- **User activity tracking** with timestamps
-- **Change history** with before/after values
-- **Export capabilities** (JSON, CSV formats)
-- **Retention management** for compliance
-
-## ✨ Features
-
-### 🔐 Authentication & Security
-- JWT-based authentication with HTTP-only cookies
-- Bcrypt password hashing
-- Role-based access control (Admin/User)
-- Rate limiting and security headers
-- CORS protection
-
-### 🚢 Vessel Management
-- Complete CRUD operations for vessels
-- Advanced search and filtering
-- Real-time data with server-side pagination
-- Bulk operations for admin users
-- Vessel statistics and dashboard
-- **Real-time vessel tracking** with live status updates
-- **Route visualization** with timeline progress
-- **Port management** with arrival/departure tracking
-- **Status management** with automated workflows
-
-### 🎨 Modern UI/UX
-- Responsive design with Tailwind CSS
-- Smooth animations with Framer Motion
-- Accessibility compliant (WCAG 2.1 AA)
-- Dark mode support
-- Mobile-first approach
-
-### 📊 Advanced Features
-- Debounced search functionality
-- Sorting and pagination
-- Optimistic UI updates
-- Error handling and validation
-- Health monitoring endpoints
-
-## 🏗️ Architecture
-
-### Tech Stack
-
-**Frontend:**
-- React 18 with TypeScript
-- React Router for navigation
-- Framer Motion for animations
-- Tailwind CSS for styling
-- Axios for API calls
-- React Hook Form for form handling
-- Zod for validation
-
-**Backend:**
-- Node.js with Express
-- TypeScript for type safety
-- MongoDB with Mongoose
-- JWT authentication
-- Zod validation
-- Comprehensive middleware
-
-**DevOps:**
-- Docker containers
-- GitHub Actions CI/CD
-- Health checks
-- Structured logging
-
-### Project Structure
+## 🏗️ Project Structure
 
 ```
-ShippingLineApp/
+Shipping App/
 ├── client/                 # React frontend
 │   ├── src/
-│   │   ├── components/     # Reusable UI components
-│   │   ├── pages/          # Application pages
-│   │   ├── lib/            # Utilities and API client
-│   │   ├── routes/         # Route configuration
-│   │   └── assets/         # Static assets
-│   ├── public/
+│   │   ├── components/     # Reusable components
+│   │   ├── pages/         # Page components
+│   │   ├── contexts/      # React contexts (Auth)
+│   │   ├── utils/         # Utility functions
+│   │   └── ...
 │   └── package.json
-│
 ├── server/                 # Node.js backend
 │   ├── src/
-│   │   ├── config/         # Configuration files
-│   │   ├── controllers/    # Request handlers
-│   │   ├── middleware/     # Custom middleware
-│   │   ├── models/         # Database models
-│   │   ├── routes/         # API routes
-│   │   ├── schemas/        # Validation schemas
-│   │   ├── scripts/        # Database seeding
-│   │   ├── utils/          # Utility functions
-│   │   └── tests/          # Test files
+│   │   ├── models/        # Database models
+│   │   ├── routes/        # API routes
+│   │   ├── middleware/    # Custom middleware
+│   │   ├── utils/         # Utility functions
+│   │   └── ...
+│   ├── uploads/           # File uploads directory
 │   └── package.json
-│
-├── docker-compose.yml      # Docker configuration
-├── .env.example           # Environment variables template
-└── README.md              # This file
+└── README.md
 ```
 
-## 🚀 Quick Start
+## 🛠️ Installation & Setup
 
 ### Prerequisites
-
-- Node.js 18+ and npm 9+
-- MongoDB Atlas account or local MongoDB
+- Node.js (v18 or higher)
+- MongoDB Atlas account (or local MongoDB)
 - Git
 
-### Installation
-
-1. **Clone the repository**
+### 1. Clone the Repository
    ```bash
    git clone <repository-url>
-   cd ShippingLineApp
+cd Shipping-App
    ```
 
-2. **Install dependencies**
+### 2. Backend Setup
+
    ```bash
-   npm install
-   ```
+# Navigate to server directory
+cd server
 
-3. **Set up environment variables**
-   ```bash
-   cp .env.example .env
-   ```
-   Edit `.env` with your configuration:
-   - Generate JWT secret: `node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"`
-   - Configure MongoDB URI
-   - Set up WhatsApp URL
+# Install dependencies
+npm install
 
-4. **Start development servers**
-   ```bash
-   npm run dev
-   ```
+# Create environment file
+cp .env.example .env
 
-5. **Seed the database** (optional)
-   ```bash
-   npm run seed
-   ```
+# Edit .env file with your MongoDB connection string
+# MONGO_URI=mongodb+srv://shippingUser:hellobuddy@shippingcluster.rqfhr3i.mongodb.net/shippingDB?retryWrites=true&w=majority&appName=ShippingCluster
 
-### Default Login Credentials
+# Create admin user
+node scripts/create-admin.js
 
-After seeding:
-- **Admin**: `admin` / `AdminPass123!`
-- **User**: `operator1` / `OperatorPass123!`
-- **Manager**: `manager` / `ManagerPass123!`
+# Start the server (development)
+npm run dev
+
+# Or build and start (production)
+npm run build
+npm start
+```
+
+### 3. Frontend Setup
+
+```bash
+# Navigate to client directory (in a new terminal)
+cd client
+
+# Install dependencies
+npm install
+
+# Start the development server
+npm run dev
+```
+
+### 4. Access the Application
+
+- **Frontend**: http://localhost:5173
+- **Backend API**: http://localhost:5000
+- **Admin Login**: Use the credentials created by the setup script
+  - Email: admin@shippingapp.com
+  - Password: admin123456
+
+## 📱 Usage
+
+### Public Features
+- Browse gallery images by category
+- Read blog posts and news
+- View tariff documents
+- Check vessel schedules
+- Contact and quote forms
+
+### Admin Features (After Login)
+1. **Dashboard**: Overview of all content
+2. **Gallery Management**: Add/edit/delete images with categories
+3. **Blog Management**: Create/edit blog posts with rich content
+4. **Tariff Management**: Upload/manage PDF documents
+5. **Schedule Management**: Create complex vessel schedules with port details
+
+## 🔐 Authentication Flow
+
+1. **Login**: Admin logs in with email/password
+2. **JWT Token**: Server returns JWT token for authentication
+3. **Protected Routes**: Frontend checks token for admin pages
+4. **API Calls**: All admin API calls include JWT in headers
+5. **Logout**: Token is cleared from frontend storage
+
+## 🗄️ Database Schema
+
+### Users
+- Email (unique)
+- Password (hashed)
+- Role (admin/user)
+
+### Gallery
+- Title, Description, Image URL
+- Category (ships, ports, containers, logistics, offices)
+- Upload metadata
+
+### Blogs
+- Title, Excerpt, Content
+- Image, External Link
+- Category, Author info
+- Tags, Featured status
+
+### Tariffs
+- Title, Description
+- PDF URL, Category
+- Upload metadata
+
+### Schedules
+- Vessel information
+- Multiple voyages with port schedules
+- Status tracking
+
+## 🚀 Deployment
+
+### Backend Deployment
+1. Set up MongoDB Atlas
+2. Configure environment variables
+3. Deploy to your preferred platform (Heroku, Vercel, etc.)
+4. Ensure uploads directory is accessible
+
+### Frontend Deployment
+1. Build the project: `npm run build`
+2. Deploy to your preferred platform
+3. Update API base URL for production
+
+## 🔧 Configuration
+
+### Environment Variables
+
+**Backend (.env)**
+```env
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret
+JWT_EXPIRE=7d
+PORT=5000
+NODE_ENV=development
+CLIENT_URL=http://localhost:5173
+ADMIN_EMAIL=admin@shippingapp.com
+ADMIN_PASSWORD=admin123456
+```
+
+**Frontend**
+- Update axios baseURL in AuthContext.tsx for production
+
+## 🛡️ Security Features
+
+- JWT authentication with expiration
+- Password hashing with bcrypt
+- Rate limiting on API endpoints
+- CORS protection
+- Input validation and sanitization
+- File upload validation
+- Role-based access control
 
 ## 📝 API Documentation
 
-### Authentication Endpoints
-
-- `POST /api/auth/login` - User login
-- `POST /api/auth/logout` - User logout
+### Authentication
+- `POST /api/auth/login` - Admin login
 - `GET /api/auth/me` - Get current user
-- `POST /api/auth/refresh` - Refresh JWT token
-- `GET /api/auth/check` - Check auth status
+- `POST /api/auth/logout` - Logout
 
-### Vessel Endpoints
+### Public Endpoints
+- `GET /api/gallery` - Get gallery images
+- `GET /api/blogs` - Get blog posts
+- `GET /api/tariffs` - Get tariff documents
+- `GET /api/schedules` - Get vessel schedules
 
-- `GET /api/vessels` - List vessels (with search, filter, pagination)
-- `POST /api/vessels` - Create new vessel
-- `GET /api/vessels/:id` - Get vessel by ID
-- `PUT /api/vessels/:id` - Update vessel
-- `DELETE /api/vessels/:id` - Delete vessel
-- `GET /api/vessels/stats` - Get dashboard statistics
-- `DELETE /api/vessels/bulk` - Bulk delete (Admin only)
-
-### Vessel Tracking Endpoints
-
-- `GET /api/v1/tracking/public` - Public vessel tracking data
-- `GET /api/v1/tracking/vessel/:id` - Detailed vessel tracking
-- `PUT /api/v1/tracking/vessel/:id/status` - Update vessel status
-- `POST /api/v1/tracking/vessel/:id/arrival` - Mark vessel arrival
-- `POST /api/v1/tracking/vessel/:id/departure` - Mark vessel departure
-- `POST /api/v1/admin/vessels/bulk` - Bulk vessel operations
-- `POST /api/v1/admin/vessels/archive` - Archive vessels
-
-### Analytics Endpoints
-
-- `GET /api/v1/analytics/tracking` - Comprehensive analytics
-- `GET /api/v1/analytics/routes/:id/performance` - Route performance
-- `GET /api/v1/analytics/ports/:id/metrics` - Port analytics
-
-### Audit Trail Endpoints
-
-- `GET /api/v1/audit/entity/:type/:id` - Entity audit history
-- `GET /api/v1/audit/user/:id` - User activity log
-- `GET /api/v1/audit/logs` - Filtered audit logs
-- `GET /api/v1/audit/export` - Export audit data
-
-### Health Endpoints
-
-- `GET /api/health` - Health check
-- `GET /api/health/ready` - Readiness probe
-- `GET /api/health/live` - Liveness probe
-
-## 🧪 Testing
-
-### Run Tests
-
-```bash
-# Backend tests
-npm run test --workspace=server
-
-# Frontend tests  
-npm run test --workspace=client
-
-# All tests
-npm test
-```
-
-### Test Coverage
-
-```bash
-npm run test:coverage --workspace=server
-```
-
-## 🏭 Production Deployment
-
-### Using Docker
-
-1. **Build and start containers**
-   ```bash
-   docker-compose up -d
-   ```
-
-2. **Scale services**
-   ```bash
-   docker-compose up -d --scale server=3
-   ```
-
-### Manual Deployment
-
-1. **Build applications**
-   ```bash
-   npm run build
-   ```
-
-2. **Start production server**
-   ```bash
-   npm start
-   ```
-
-### Environment Configuration
-
-**Development:**
-- Server: `process.env.VITE_API_URL || 'http://localhost:5000'`
-- Client: `http://localhost:5173`
-
-**Production:**
-- Configure reverse proxy (Nginx)
-- Set up SSL certificates
-- Use environment-specific values
-- Enable monitoring and logging
-
-## 🔧 Scripts
-
-### Root Level
-- `npm run dev` - Start both client and server in development
-- `npm run build` - Build both applications
-- `npm test` - Run all tests
-- `npm run lint` - Lint all code
-- `npm run seed` - Seed database
-
-### Server Specific
-- `npm run dev --workspace=server` - Start server only
-- `npm run build --workspace=server` - Build server
-- `npm run start --workspace=server` - Start production server
-
-### Client Specific
-- `npm run dev --workspace=client` - Start client only
-- `npm run build --workspace=client` - Build client
-- `npm run preview --workspace=client` - Preview build
-
-## 📊 Performance
-
-### Lighthouse Scores (Target)
-- Performance: ≥85
-- Accessibility: ≥90
-- Best Practices: ≥90
-- SEO: ≥85
-
-### Features for Performance
-- Code splitting and lazy loading
-- Image optimization
-- Gzip compression
-- Efficient database queries
-- Caching strategies
-- Bundle optimization
-
-## 🔒 Security
-
-### Frontend
-- XSS protection
-- Input sanitization
-- Secure routing
-- Environment variable protection
-
-### Backend
-- Helmet security headers
-- Rate limiting
-- CORS configuration
-- Input validation
-- SQL injection prevention
-- Authentication tokens in HTTP-only cookies
-
-## 🌐 Browser Support
-
-- Chrome 88+
-- Firefox 85+
-- Safari 14+
-- Edge 88+
+### Admin Endpoints (Require Authentication)
+- `POST /api/gallery` - Add gallery image
+- `PUT /api/gallery/:id` - Update gallery image
+- `DELETE /api/gallery/:id` - Delete gallery image
+- Similar CRUD operations for blogs, tariffs, and schedules
 
 ## 🤝 Contributing
 
 1. Fork the repository
-2. Create feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open Pull Request
-
-### Development Guidelines
-
-- Follow TypeScript best practices
-- Write tests for new features
-- Update documentation
-- Follow conventional commits
-- Ensure accessibility compliance
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License.
 
-## 🙏 Acknowledgments
-
-- Maritime industry standards
-- Open source community
-- Modern web development practices
-- Security best practices
-
-## 📚 Documentation
-
-- **API Documentation**: [API_DOCUMENTATION.md](./docs/API_DOCUMENTATION.md)
-- **WebSocket API**: Real-time communication guide
-- **Database Schema**: MongoDB collection structures
-- **Performance Guide**: Optimization and monitoring
-
-## 🔄 Real-time Features
-
-### WebSocket Integration
-- Real-time vessel status updates
-- Live notifications for status changes
-- Multi-user subscriptions with role-based access
-- Automatic reconnection with connection health monitoring
-
-### Performance Optimization
-- Database indexing for optimal query performance
-- Connection pooling and resource management
-- Slow query monitoring and optimization
-- Caching strategies for frequently accessed data
-
-## 📞 Support
+## 🆘 Support
 
 For support and questions:
-- Create an issue in the repository
-- Contact: support@vesseltracking.com
-- Documentation: [docs/API_DOCUMENTATION.md](./docs/API_DOCUMENTATION.md)
-- Developer Portal: [developers.vesseltracking.com](https://developers.vesseltracking.com)
+1. Check the documentation
+2. Review the code comments
+3. Create an issue in the repository
+
+## 🔄 Future Enhancements
+
+- [ ] Real-time notifications
+- [ ] Advanced search and filtering
+- [ ] Image optimization and CDN integration
+- [ ] Email notifications
+- [ ] Advanced analytics dashboard
+- [ ] Mobile app development
+- [ ] Multi-language support
 
 ---
 
-**Built with ❤️ for maritime logistics and vessel tracking**
+**Built with ❤️ for efficient shipping line management**

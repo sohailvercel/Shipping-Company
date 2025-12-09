@@ -48,28 +48,29 @@ const config: Config = {
         // Video-specific text colors
         video: {
           dark: {
-            text: '#ffffff',
-            subtitle: '#bfdbfe', // blue-200
-            description: '#e5e7eb', // gray-200
-            cta: '#2563eb', // blue-600
-            ctaText: '#ffffff',
-            statsBg: 'rgba(0, 0, 0, 0.3)'
+  text: '#E2E8F0', // light gray-blue for the main title — elegant & readable
+  subtitle: 'black', // soft mint-teal accent for “Beyond Boundaries” etc.
+  description: '#F8FAFC', // very light off-white for readability
+  cta: 'Blue', // sky-blue button (contrasts the orange video background)
+  ctaText: '#FFFFFF', // pure white text on CTA
+  // statsBg: 'rgba(0, 0, 0, 0.45)', // dark translucent overlay for stats or text bg
           },
-          mixed: {
-            text: '#1e3a8a', // navy-900
-            subtitle: '#1e40af', // blue-900
-            description: '#1f2937', // gray-800
-            cta: '#0d9488', // teal-600
-            ctaText: '#ffffff',
-            statsBg: 'rgba(255, 255, 255, 0.6)'
-          },
+mixed: {
+  text: '#E2E8F0', // light gray-blue for the main title — elegant & readable
+  subtitle: '#A7F3D0', // soft mint-teal accent for “Beyond Boundaries” etc.
+  description: '#F8FAFC', // very light off-white for readability
+  cta: ' #FFFFFF', // sky-blue button (contrasts the orange video background)
+  ctaText: '#0EA5E9', // pure white text on CTA
+  // statsBg: 'rgba(0, 0, 0, 0.45)', // dark translucent overlay for stats or text bg
+ },
+
           light: {
-            text: '#172554', // blue-950
-            subtitle: '#1e40af', // blue-800
-            description: '#1f2937', // gray-800
-            cta: '#dc2626', // red-600
-            ctaText: '#ffffff',
-            statsBg: 'rgba(255, 255, 255, 0.7)'
+  text: '#E2E8F0', // light gray-blue for the main title — elegant & readable
+  subtitle: 'black', // soft mint-teal accent for “Beyond Boundaries” etc.
+  description: '#F8FAFC', // very light off-white for readability
+  cta: '#0EA5E9', // sky-blue button (contrasts the orange video background)
+  ctaText: '#FFFFFF', // pure white text on CTA
+  // statsBg: 'rgba(0, 0, 0, 0.45)', // dark translucent overlay for stats or text bg
           }
         },
         accent: {

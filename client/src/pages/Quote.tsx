@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import { motion } from 'framer-motion';
-import { 
-  Ship, 
-  MapPin, 
-  Package, 
+import {
+  Ship,
+  MapPin,
+  Package,
   Calendar,
   ArrowRight,
   CheckCircle,
@@ -12,7 +13,7 @@ import {
   Clock,
   Globe
 } from 'lucide-react';
-import { pageBackgrounds } from '../assets/videos';
+// import { pageBackgrounds } from '../assets/videos';
 
 const Quote: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -46,13 +47,45 @@ const Quote: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    // Simulate API call
+
     try {
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      setIsSubmitted(true);
-    } catch (error) {
+      // 1. Get API Key from server
+      const apiUrl = import.meta.env.VITE_API_BASE || import.meta.env.VITE_API_URL?.replace(/\/api$/, '') || 'http://localhost:5000';
+      const configResponse = await axios.get(`${apiUrl}/api/contact/config`);
+      const apiKey = configResponse.data.apiKey;
+
+      if (!apiKey) {
+        throw new Error('Could not retrieve API key from server');
+      }
+
+      // 2. Submit directly to Web3Forms
+      const response = await axios.post("https://api.web3forms.com/submit", {
+        access_key: apiKey,
+        ...formData,
+        subject: `New Quote Request from ${formData.contactName}`,
+        message: `
+          Shipment Type: ${formData.shipmentType}
+          Cargo Type: ${formData.cargoType}
+          Origin: ${formData.origin}
+          Destination: ${formData.destination}
+          Weight: ${formData.weight}
+          Volume: ${formData.volume}
+          Container Type: ${formData.containerType}
+          Pickup Date: ${formData.pickupDate}
+          Delivery Date: ${formData.deliveryDate}
+          Special Requirements: ${formData.specialRequirements}
+          Company: ${formData.company}
+          Phone: ${formData.phone}
+          Email: ${formData.email}
+        `
+      });
+
+      if (response.status === 200) {
+        setIsSubmitted(true);
+      }
+    } catch (error: any) {
       console.error('Quote submission error:', error);
+      alert(`Error: ${error.response?.data?.message || error.message || 'Submission failed'}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -75,7 +108,7 @@ const Quote: React.FC = () => {
   if (isSubmitted) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 flex items-center justify-center px-4">
-        <motion.div 
+        <motion.div
           className="max-w-md w-full text-center"
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -119,10 +152,10 @@ const Quote: React.FC = () => {
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
       <section className="relative py-20 overflow-hidden">
-        <div className="absolute inset-0 bg-blue-500"></div>
-        
+        <div className="absolute inset-0 bg-gray-800"></div>
+
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
-          <motion.div 
+          <motion.div
             className="text-center"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -142,7 +175,7 @@ const Quote: React.FC = () => {
       <section className="py-20 bg-transparent">
 
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div 
+          <motion.div
             className="bg-white rounded-2xl shadow-xl overflow-hidden"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}

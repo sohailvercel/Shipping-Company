@@ -12,7 +12,8 @@ import {
   Award,
   Network,
   TrendingUp,
-  HeartHandshake
+  HeartHandshake,
+  Handshake
 } from 'lucide-react';
 
 const BakshGroup: React.FC = () => {
@@ -74,7 +75,7 @@ const BakshGroup: React.FC = () => {
     {
       year: '1967',
       title: 'Formal Incorporation',
-      event: 'Establishment of Baksh Investment Limited',
+      event: 'Baksh Investment Limited was incorporated',
       icon: Building2
     },
     {
@@ -82,6 +83,12 @@ const BakshGroup: React.FC = () => {
       title: 'New Horizons',
       event: 'Launch of Yaaseen Shipping Lines',
       icon: Globe
+    },
+    {
+      year: '2006',
+      title: 'Strategic Partnerships',
+      event: 'Appointed as agents for STX Pan Ocean Co Ltd (now Pan Ocean)',
+      icon: Handshake
     },
     {
       year: '2007',
@@ -92,7 +99,7 @@ const BakshGroup: React.FC = () => {
     {
       year: '2008',
       title: 'Specialized Services',
-      event: 'Formation of Yaaseen Shipping Lines (PVT) Ltd',
+      event: 'Established off-dock empty container depots in Karachi and Lahore.',
       icon: Anchor
     },
     {
@@ -293,7 +300,7 @@ const BakshGroup: React.FC = () => {
       <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Journey</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Journey Through Time</h2>
             <div className="w-24 h-1 bg-blue-600 mx-auto"></div>
           </div>
           

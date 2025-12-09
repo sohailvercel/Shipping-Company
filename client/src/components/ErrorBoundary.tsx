@@ -1,5 +1,5 @@
-import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { AlertTriangle, RefreshCw } from 'lucide-react';
+import { Component, ErrorInfo, ReactNode } from "react";
+import { AlertTriangle, RefreshCw } from "lucide-react";
 
 interface Props {
   children: ReactNode;
@@ -24,7 +24,7 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('ErrorBoundary caught an error:', error, errorInfo);
+    console.error("ErrorBoundary caught an error:", error, errorInfo);
     this.setState({
       error,
       errorInfo,
@@ -58,7 +58,8 @@ export class ErrorBoundary extends Component<Props, State> {
                 Oops! Something went wrong
               </h2>
               <p className="mt-2 text-sm text-gray-600">
-                We encountered an unexpected error. Please try refreshing the page.
+                We encountered an unexpected error. Please try refreshing the
+                page.
               </p>
             </div>
 
@@ -79,24 +80,29 @@ export class ErrorBoundary extends Component<Props, State> {
               </button>
             </div>
 
-            {(import.meta as any).env?.MODE === 'development' && this.state.error && (
-              <details className="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-                <summary className="cursor-pointer text-sm font-medium text-red-800 hover:text-red-900">
-                  Error Details (Development Mode)
-                </summary>
-                <div className="mt-3 text-xs text-red-700 overflow-auto">
-                  <p className="font-semibold">Error:</p>
-                  <pre className="whitespace-pre-wrap mb-3">{this.state.error.toString()}</pre>
-                  
-                  {this.state.errorInfo && (
-                    <>
-                      <p className="font-semibold">Component Stack:</p>
-                      <pre className="whitespace-pre-wrap">{this.state.errorInfo.componentStack}</pre>
-                    </>
-                  )}
-                </div>
-              </details>
-            )}
+            {(import.meta as any).env?.MODE === "development" &&
+              this.state.error && (
+                <details className="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                  <summary className="cursor-pointer text-sm font-medium text-red-800 hover:text-red-900">
+                    Error Details (Development Mode)
+                  </summary>
+                  <div className="mt-3 text-xs text-red-700 overflow-auto">
+                    <p className="font-semibold">Error:</p>
+                    <pre className="whitespace-pre-wrap mb-3">
+                      {this.state.error.toString()}
+                    </pre>
+
+                    {this.state.errorInfo && (
+                      <>
+                        <p className="font-semibold">Component Stack:</p>
+                        <pre className="whitespace-pre-wrap">
+                          {this.state.errorInfo.componentStack}
+                        </pre>
+                      </>
+                    )}
+                  </div>
+                </details>
+              )}
           </div>
         </div>
       );
