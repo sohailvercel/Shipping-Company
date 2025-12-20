@@ -678,7 +678,7 @@ established in Karachi and Lahore Port, serving key clients.
                       <div className="flex items-center mb-6">
                         {company.id === "baksh-investment" && (
                           <img
-                            src="/images/bakhs_limited.jpg"
+                            src="/images/BSLLOGO-01.png"
                             alt="Baksh Shipping Lines Logo"
                             className="h-12 w-auto mr-4"
                           />
@@ -698,6 +698,13 @@ established in Karachi and Lahore Port, serving key clients.
                             className="h-12 w-auto mr-4"
                           />
                         )}
+                        {company.id === "zoom" && (
+                          <img
+                            src="/images/zwl_logo.png"
+                            alt="Zoom Logo"
+                            className="h-16 w-16 mr-4"
+                          />
+                        )}                        
                         <h2 className="text-3xl font-bold text-gray-900">
                           {company.name}
                         </h2>
