@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { getEffectiveRate, getEffectiveRatePublic } from "../lib/exchangeRates";
 import { motion } from "framer-motion";
 import { useAuth } from "../contexts/AuthContext";
@@ -6,7 +6,9 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import EditableTable from "../components/EditableTable";
 import { TariffPageData, TariffTable, CompanyTariff } from "../types/tariff";
-
+import {
+  Clock
+} from 'lucide-react';
 const Tariffs: React.FC = () => {
   const { user } = useAuth();
   const [isAdmin, setIsAdmin] = useState(false);
@@ -33,6 +35,13 @@ const Tariffs: React.FC = () => {
     null
   );
   const [userPickerLoading, setUserPickerLoading] = useState(false);
+  const [scheduleFile, setScheduleFile] = useState<{
+    fileName: string;
+    fileUrl: string;
+    fileType: string;
+    updatedAt: string;
+  } | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [tariffData, setTariffData] = useState<TariffPageData | null>(null);
   const [editableData, setEditableData] = useState<TariffPageData | null>(null);
@@ -104,7 +113,19 @@ const Tariffs: React.FC = () => {
       }
     };
 
+    const fetchScheduleFile = async () => {
+      try {
+        const response = await axios.get("/schedule-file");
+        if (response.data.success) {
+          setScheduleFile(response.data.data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch schedule file:", err);
+      }
+    };
+
     fetchTariffData();
+    fetchScheduleFile();
   }, []);
 
   // Unified exchange editing handlers
@@ -159,6 +180,45 @@ const Tariffs: React.FC = () => {
   const handleCancelEdit = () => {
     setEditingTable(null);
     setEditableData(tariffData);
+  };
+
+  const handleDownloadSchedule = () => {
+    if (!scheduleFile) return;
+    const link = document.createElement("a");
+    link.href = scheduleFile.fileUrl;
+    link.download = scheduleFile.fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleUploadSchedule = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !isAdmin) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    setIsSaving(true);
+    try {
+      const response = await axios.post("/schedule-file", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      if (response.data.success) {
+        setScheduleFile(response.data.data);
+        toast.success("Schedule uploaded successfully");
+      }
+    } catch (err: any) {
+      console.error("Failed to upload schedule:", err);
+      toast.error(err.response?.data?.error || "Failed to upload schedule");
+    } finally {
+      setIsSaving(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
+  const triggerFileInput = () => {
+    if (fileInputRef.current) fileInputRef.current.click();
   };
 
   const handleSaveTable = async () => {
@@ -268,9 +328,9 @@ const Tariffs: React.FC = () => {
       companies: editableData.companies.map((c, i) =>
         i === companyIndex
           ? {
-              ...c,
-              tables: [...(c.tables || []), { title, columns: [], rows: [] }],
-            }
+            ...c,
+            tables: [...(c.tables || []), { title, columns: [], rows: [] }],
+          }
           : c
       ),
     };
@@ -321,9 +381,9 @@ const Tariffs: React.FC = () => {
       companies: editableData.companies.map((c, i) =>
         i === companyIndex
           ? {
-              ...c,
-              tables: (c.tables || []).filter((_, ti) => ti !== tableIndex),
-            }
+            ...c,
+            tables: (c.tables || []).filter((_, ti) => ti !== tableIndex),
+          }
           : c
       ),
     };
@@ -426,246 +486,346 @@ const Tariffs: React.FC = () => {
         </motion.div>
       )}
 
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-800 text-white py-4 shadow-2xl rounded-lg mb-8 max-w-6xl mx-auto"
-      >
-        <div className="px-6">
-          {/* Unified exchange ribbon (cleaned, balanced JSX) */}
-          {!isEditingExchange ? (
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 w-full">
-              <div className="flex items-start space-x-4">
-                {/* calendar control (functional) or spacer */}
-                {isAdmin || tariffData?.allowUserHistoricalRates ? (
-                  <button
-                    onClick={() => setShowUserPicker((s) => !s)}
-                    className="bg-white/10 p-2 rounded-lg backdrop-blur-sm hover:bg-white/20 transition-colors flex items-center justify-center"
-                    title={
-                      isAdmin
-                        ? "Pick date / admin fetch"
-                        : "Pick date to view historical rate"
-                    }
-                  >
-                    <svg
-                      className="w-6 h-6 text-yellow-300"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
+      {(isAdmin || tariffData?.allowUserHistoricalRates) && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-800 text-white py-4 shadow-2xl rounded-lg mb-8 max-w-6xl mx-auto"
+        >
+          <div className="px-6">
+            {/* Unified exchange ribbon (cleaned, balanced JSX) */}
+            {!isEditingExchange ? (
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 w-full">
+                <div className="flex items-start space-x-4">
+                  {/* calendar control (functional) or spacer */}
+                  {isAdmin || tariffData?.allowUserHistoricalRates ? (
+                    <button
+                      onClick={() => setShowUserPicker((s) => !s)}
+                      className="bg-white/10 p-2 rounded-lg backdrop-blur-sm hover:bg-white/20 transition-colors flex items-center justify-center"
+                      title={
+                        isAdmin
+                          ? "Pick date / admin fetch"
+                          : "Pick date to view historical rate"
+                      }
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                      />
-                    </svg>
-                  </button>
-                ) : (
-                  <div
-                    aria-hidden
-                    className="bg-white/10 p-2 rounded-lg backdrop-blur-sm transition-colors flex items-center justify-center"
-                    title="Historical rates (admin-only)"
-                  >
-                    <svg
-                      className="w-6 h-6 text-yellow-300"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
+                      <svg
+                        className="w-6 h-6 text-yellow-300"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                        />
+                      </svg>
+                    </button>
+                  ) : (
+                    <div
+                      aria-hidden
+                      className="bg-white/10 p-2 rounded-lg backdrop-blur-sm transition-colors flex items-center justify-center"
+                      title="Historical rates (admin-only)"
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                      />
-                    </svg>
-                  </div>
-                )}
+                      <svg
+                        className="w-6 h-6 text-yellow-300"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                        />
+                      </svg>
+                    </div>
+                  )}
 
-                <div className="flex flex-col">
-                  <div className="flex items-center gap-4">
-                    <div>
-                      <span className="text-xs text-blue-200 block">Today</span>
-                      <span className="font-semibold text-lg block">
-                        {new Date().toLocaleDateString()}
-                      </span>
+                  <div className="flex flex-col">
+                    <div className="flex items-center gap-4">
+                      <div>
+                        <span className="text-xs text-blue-200 block">
+                          Today
+                        </span>
+                        <span className="font-semibold text-lg block">
+                          {new Date().toLocaleDateString()}
+                        </span>
+                      </div>
+
+                      {isAdmin && (
+                        <div className="text-xs text-blue-100/80 mt-1">
+                          Saved on: {exchangeDate}
+                        </div>
+                      )}
                     </div>
 
-                    {isAdmin && (
-                      <div className="text-xs text-blue-100/80 mt-1">
-                        Saved on: {exchangeDate}
-                      </div>
-                    )}
-                  </div>
-
-                  {showUserPicker &&
-                    (isAdmin || tariffData?.allowUserHistoricalRates) && (
-                      <div className="mt-3 bg-white/5 p-3 rounded-lg border border-white/10">
-                        <div className="flex items-center gap-3">
-                          <input
-                            type="date"
-                            value={userPickerDate}
-                            onChange={(e) => setUserPickerDate(e.target.value)}
-                            className="px-3 py-2 rounded-lg text-gray-900"
-                          />
-                          <button
-                            onClick={async () => {
-                              setUserPickerLoading(true);
-                              setUserFetchedRate(null);
-                              setUserFetchedSource(null);
-                              try {
-                                const res = isAdmin
-                                  ? await getEffectiveRate(userPickerDate)
-                                  : await getEffectiveRatePublic(
+                    {showUserPicker &&
+                      (isAdmin || tariffData?.allowUserHistoricalRates) && (
+                        <div className="mt-3 bg-white/5 p-3 rounded-lg border border-white/10">
+                          <div className="flex items-center gap-3">
+                            <input
+                              type="date"
+                              value={userPickerDate}
+                              onChange={(e) =>
+                                setUserPickerDate(e.target.value)
+                              }
+                              className="px-3 py-2 rounded-lg text-gray-900"
+                            />
+                            <button
+                              onClick={async () => {
+                                setUserPickerLoading(true);
+                                setUserFetchedRate(null);
+                                setUserFetchedSource(null);
+                                try {
+                                  const res = isAdmin
+                                    ? await getEffectiveRate(userPickerDate)
+                                    : await getEffectiveRatePublic(
                                       userPickerDate
                                     );
-                                if (res) {
-                                  setUserFetchedRate(res.rate);
-                                  setUserFetchedSource(res.sourceDate);
-                                } else {
-                                  setUserFetchedRate(null);
-                                  setUserFetchedSource(null);
-                                  toast(
-                                    "No saved rate on or before this date",
-                                    { icon: "ℹ️" }
+                                  if (res) {
+                                    setUserFetchedRate(res.rate);
+                                    setUserFetchedSource(res.sourceDate);
+                                  } else {
+                                    setUserFetchedRate(null);
+                                    setUserFetchedSource(null);
+                                    toast(
+                                      "No saved rate on or before this date",
+                                      { icon: "ℹ️" }
+                                    );
+                                  }
+                                } catch (err: any) {
+                                  toast.error(
+                                    err?.message || "Failed to fetch rate"
                                   );
+                                } finally {
+                                  setUserPickerLoading(false);
                                 }
-                              } catch (err: any) {
-                                toast.error(
-                                  err?.message || "Failed to fetch rate"
-                                );
-                              } finally {
-                                setUserPickerLoading(false);
-                              }
-                            }}
-                            disabled={userPickerLoading}
-                            className="px-3 py-2 bg-blue-600 text-white rounded-lg disabled:opacity-50"
-                          >
-                            {userPickerLoading ? "Fetching…" : "Fetch"}
-                          </button>
-                          <button
-                            onClick={() => setShowUserPicker(false)}
-                            className="px-3 py-2 bg-gray-300 rounded-lg"
-                          >
-                            Close
-                          </button>
-                        </div>
+                              }}
+                              disabled={userPickerLoading}
+                              className="px-3 py-2 bg-blue-600 text-white rounded-lg disabled:opacity-50"
+                            >
+                              {userPickerLoading ? "Fetching…" : "Fetch"}
+                            </button>
+                            <button
+                              onClick={() => setShowUserPicker(false)}
+                              className="px-3 py-2 bg-gray-300 rounded-lg"
+                            >
+                              Close
+                            </button>
+                          </div>
 
-                        <div className="mt-3 text-sm text-white">
-                          {userFetchedRate !== null ? (
-                            <div>
-                              1 USD ={" "}
-                              <strong>{userFetchedRate.toFixed(2)}</strong> PKR
-                              {userFetchedSource && (
-                                <span className="text-gray-200">
-                                  {" "}
-                                  (last updated on {userFetchedSource})
-                                </span>
-                              )}
-                            </div>
-                          ) : (
-                            <div className="text-gray-200">
-                              Select a date and fetch the saved rate.
-                            </div>
-                          )}
+                          <div className="mt-3 text-sm text-white">
+                            {userFetchedRate !== null ? (
+                              <div>
+                                1 USD ={" "}
+                                <strong>{userFetchedRate.toFixed(2)}</strong>{" "}
+                                PKR
+                                {userFetchedSource && (
+                                  <span className="text-gray-200">
+                                    {" "}
+                                    (last updated on {userFetchedSource})
+                                  </span>
+                                )}
+                              </div>
+                            ) : (
+                              <div className="text-gray-200">
+                                Select a date and fetch the saved rate.
+                              </div>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-3 bg-gradient-to-r from-blue-800/50 to-indigo-900/50 px-5 py-3 rounded-xl shadow-lg backdrop-blur-sm border border-white/10">
+                  <span className="text-blue-200 text-sm">Exchange Rate:</span>
+                  <span className="font-bold text-xl text-yellow-300 drop-shadow-lg">
+                    1 USD = {exchangeRate.toFixed(2)} PKR
+                  </span>
+                  {isAdmin && (
+                    <button
+                      onClick={handleStartEditExchange}
+                      disabled={isSaving}
+                      className="ml-3 px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white text-sm font-medium rounded-lg transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                      title="Edit Exchange"
+                    >
+                      ✏️ Edit Exchange
+                    </button>
+                  )}
                 </div>
               </div>
-
-              <div className="flex items-center space-x-3 bg-gradient-to-r from-blue-800/50 to-indigo-900/50 px-5 py-3 rounded-xl shadow-lg backdrop-blur-sm border border-white/10">
-                <span className="text-blue-200 text-sm">Exchange Rate:</span>
-                <span className="font-bold text-xl text-yellow-300 drop-shadow-lg">
-                  1 USD = {exchangeRate.toFixed(2)} PKR
-                </span>
-                {isAdmin && (
-                  <button
-                    onClick={handleStartEditExchange}
-                    disabled={isSaving}
-                    className="ml-3 px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white text-sm font-medium rounded-lg transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
-                    title="Edit Exchange"
-                  >
-                    ✏️ Edit Exchange
-                  </button>
-                )}
-              </div>
-            </div>
-          ) : (
-            <div className="flex flex-col sm:flex-row items-center gap-4 w-full">
-              <div className="flex items-center space-x-2">
-                <div className="bg-white/10 p-2 rounded-lg backdrop-blur-sm">
-                  <svg
-                    className="w-6 h-6 text-yellow-300"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+            ) : (
+              <div className="flex flex-col sm:flex-row items-center gap-4 w-full">
+                <div className="flex items-center space-x-2">
+                  <div className="bg-white/10 p-2 rounded-lg backdrop-blur-sm">
+                    <svg
+                      className="w-6 h-6 text-yellow-300"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      />
+                    </svg>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-xs text-blue-200 mb-1">
+                      Effective Date
+                    </span>
+                    <input
+                      type="date"
+                      value={tempExchangeDate}
+                      onChange={(e) => setTempExchangeDate(e.target.value)}
+                      className="px-3 py-2 text-sm rounded-lg border-2 border-blue-300 text-gray-900 focus:ring-2 focus:ring-yellow-400"
                     />
+                  </div>
+                </div>
+                <div className="flex items-center space-x-2 bg-gradient-to-r from-blue-800/50 to-indigo-900/50 px-4 py-3 rounded-xl border border-white/10">
+                  <span className="text-blue-200 text-sm">Exchange Rate:</span>
+                  <span className="text-yellow-300 font-medium">1 USD =</span>
+                  <input
+                    type="number"
+                    value={tempExchangeRate}
+                    onChange={(e) =>
+                      setTempExchangeRate(parseFloat(e.target.value) || 0)
+                    }
+                    className="w-28 px-3 py-2 text-sm rounded-lg border-2 border-blue-300 text-gray-900 focus:ring-2 focus:ring-yellow-400"
+                    step="0.01"
+                    min="0"
+                    autoFocus
+                  />
+                  <span className="text-yellow-300 font-medium">PKR</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={handleSaveExchange}
+                    disabled={
+                      isSaving ||
+                      isNaN(tempExchangeRate) ||
+                      tempExchangeRate <= 0 ||
+                      !/^\d{4}-\d{2}-\d{2}$/.test(tempExchangeDate)
+                    }
+                    className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white text-sm font-medium rounded-lg transition-all disabled:opacity-50 shadow-md hover:shadow-lg"
+                    title="Save Exchange"
+                  >
+                    {isSaving ? "⏳ Saving..." : "✓ Save"}
+                  </button>
+                  <button
+                    onClick={handleCancelExchange}
+                    disabled={isSaving}
+                    className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-medium rounded-lg transition-all shadow-md hover:shadow-lg"
+                    title="Cancel"
+                  >
+                    ✕ Cancel
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </motion.div>
+      )}
+
+      {/* Schedule Section Heading */}
+      {(isAdmin || scheduleFile) && (
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          className="max-w-6xl mx-auto mb-6 px-4"
+        >
+          <div className="flex items-center gap-3">
+            <div className="h-8 w-1.5 bg-blue-600 rounded-full" />
+            <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Vessel Schedule</h2>
+          </div>
+          <p className="mt-1 text-sm text-gray-500 ml-4.5">Download our latest shipping schedules and port arrival information.</p>
+        </motion.div>
+      )}
+
+      {/* Schedule Bar */}
+      {(isAdmin || scheduleFile) && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="bg-white border-b-4 border-b-blue-600 shadow-2xl rounded-2xl mb-16 max-w-6xl mx-auto overflow-hidden group hover:shadow-blue-100/50 transition-shadow duration-500"
+        >
+          <div className="flex flex-col md:flex-row items-center justify-between p-6 sm:p-8 gap-6 bg-gradient-to-br from-white to-blue-50/30">
+            <div className="flex items-center gap-6">
+              <div className="relative">
+                <div className="bg-blue-600 p-4 rounded-2xl shadow-lg shadow-blue-200">
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                 </div>
-                <div className="flex flex-col">
-                  <span className="text-xs text-blue-200 mb-1">
-                    Effective Date
+                {scheduleFile && (
+                  <div className="absolute -top-2 -right-2 bg-green-500 w-4 h-4 rounded-full border-2 border-white shadow-sm" />
+                )}
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                  {scheduleFile ? scheduleFile.fileName : "No schedule available"}
+                </h3>
+                <div className="flex items-center gap-4 mt-1">
+                  <span className="flex items-center gap-1.5 text-xs font-medium text-gray-500">
+                    <Clock className="w-3.5 h-3.5" />
+                    Updated: {scheduleFile ? new Date(scheduleFile.updatedAt).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) : "--"}
                   </span>
-                  <input
-                    type="date"
-                    value={tempExchangeDate}
-                    onChange={(e) => setTempExchangeDate(e.target.value)}
-                    className="px-3 py-2 text-sm rounded-lg border-2 border-blue-300 text-gray-900 focus:ring-2 focus:ring-yellow-400"
-                  />
+                  {scheduleFile && (
+                    <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full uppercase tracking-wider">
+                      {scheduleFile.fileType.split('/')[1]?.toUpperCase() || 'DOC'}
+                    </span>
+                  )}
                 </div>
               </div>
-              <div className="flex items-center space-x-2 bg-gradient-to-r from-blue-800/50 to-indigo-900/50 px-4 py-3 rounded-xl border border-white/10">
-                <span className="text-blue-200 text-sm">Exchange Rate:</span>
-                <span className="text-yellow-300 font-medium">1 USD =</span>
-                <input
-                  type="number"
-                  value={tempExchangeRate}
-                  onChange={(e) =>
-                    setTempExchangeRate(parseFloat(e.target.value) || 0)
-                  }
-                  className="w-28 px-3 py-2 text-sm rounded-lg border-2 border-blue-300 text-gray-900 focus:ring-2 focus:ring-yellow-400"
-                  step="0.01"
-                  min="0"
-                  autoFocus
-                />
-                <span className="text-yellow-300 font-medium">PKR</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={handleSaveExchange}
-                  disabled={
-                    isSaving ||
-                    isNaN(tempExchangeRate) ||
-                    tempExchangeRate <= 0 ||
-                    !/^\d{4}-\d{2}-\d{2}$/.test(tempExchangeDate)
-                  }
-                  className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white text-sm font-medium rounded-lg transition-all disabled:opacity-50 shadow-md hover:shadow-lg"
-                  title="Save Exchange"
-                >
-                  {isSaving ? "⏳ Saving..." : "✓ Save"}
-                </button>
-                <button
-                  onClick={handleCancelExchange}
-                  disabled={isSaving}
-                  className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-medium rounded-lg transition-all shadow-md hover:shadow-lg"
-                  title="Cancel"
-                >
-                  ✕ Cancel
-                </button>
-              </div>
             </div>
-          )}
-        </div>
-      </motion.div>
+
+            <div className="flex items-center gap-4 w-full md:w-auto">
+              {scheduleFile && (
+                <button
+                  onClick={handleDownloadSchedule}
+                  className="flex-1 md:flex-none flex items-center justify-center gap-2.5 px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-xl transition-all shadow-xl shadow-blue-200 hover:shadow-blue-300 hover:-translate-y-0.5"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                  Download Schedule
+                </button>
+              )}
+
+              {isAdmin && (
+                <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleUploadSchedule}
+                    className="hidden"
+                    accept=".pdf,.doc,.docx,.xls,.xlsx"
+                  />
+                  <button
+                    onClick={triggerFileInput}
+                    disabled={isSaving}
+                    className="flex items-center justify-center gap-2.5 px-6 py-3.5 bg-white border-2 border-amber-400 text-amber-600 hover:bg-amber-50 text-sm font-bold rounded-xl transition-all disabled:opacity-50"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                    </svg>
+                    {isSaving ? "Uploading..." : scheduleFile ? "Change File" : "Upload Schedule"}
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </motion.div>
+      )}
 
       <div className="max-w-6xl mx-auto pb-12">
         <div className="text-center mb-12">
@@ -875,7 +1035,7 @@ const Tariffs: React.FC = () => {
                           disabled={
                             isSaving ||
                             (deleteTableIndexByCompany[companyIndex] ?? "") ===
-                              ""
+                            ""
                           }
                           className="px-3 py-1.5 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white text-sm font-medium rounded-lg disabled:opacity-50 shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5"
                         >
@@ -965,16 +1125,14 @@ const Tariffs: React.FC = () => {
             <h3 className="text-lg font-semibold mb-3">Confirm deletion</h3>
             <p className="mb-4 text-sm text-gray-700">
               {showConfirmDeleteCompany && companyToDelete !== null
-                ? `Delete company "${
-                    editableData?.companies[companyToDelete]?.name || "Unnamed"
-                  }" and all its contents?`
+                ? `Delete company "${editableData?.companies[companyToDelete]?.name || "Unnamed"
+                }" and all its contents?`
                 : showConfirmDeleteTable
-                ? `Delete table "${
-                    editableData?.companies[showConfirmDeleteTable.companyIndex]
-                      ?.tables?.[showConfirmDeleteTable.tableIndex]?.title ||
-                    `Table ${showConfirmDeleteTable.tableIndex + 1}`
+                  ? `Delete table "${editableData?.companies[showConfirmDeleteTable.companyIndex]
+                    ?.tables?.[showConfirmDeleteTable.tableIndex]?.title ||
+                  `Table ${showConfirmDeleteTable.tableIndex + 1}`
                   }"?`
-                : "Are you sure you want to delete this item?"}
+                  : "Are you sure you want to delete this item?"}
             </p>
 
             <div className="flex justify-end gap-3">

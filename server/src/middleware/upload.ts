@@ -24,9 +24,15 @@ const storage = multer.diskStorage({
 const fileFilter = (req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
   const allowedImageTypes = process.env.ALLOWED_IMAGE_TYPES?.split(',') || ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
   const allowedPdfTypes = process.env.ALLOWED_PDF_TYPES?.split(',') || ['application/pdf'];
-  
-  const allowedTypes = [...allowedImageTypes, ...allowedPdfTypes];
-  
+  const allowedDocTypes = [
+    'application/vnd.ms-excel',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+  ];
+
+  const allowedTypes = [...allowedImageTypes, ...allowedPdfTypes, ...allowedDocTypes];
+
   if (allowedTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
@@ -48,6 +54,9 @@ export const uploadSingle = upload.single('image');
 
 // Upload middleware for single PDF
 export const uploadPdf = upload.single('pdf');
+
+// Upload middleware for single Document (Schedule)
+export const uploadDoc = upload.single('file');
 
 // Upload middleware for multiple images
 export const uploadMultiple = upload.array('images', 10);
@@ -74,13 +83,13 @@ export const handleUploadError = (error: any, req: Request, res: any, next: any)
       });
     }
   }
-  
+
   if (error.message) {
     return res.status(400).json({
       success: false,
       error: error.message
     });
   }
-  
+
   next(error);
 };

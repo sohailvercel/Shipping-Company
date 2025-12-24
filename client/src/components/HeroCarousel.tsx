@@ -400,7 +400,7 @@ const HeroCarousel: React.FC = () => {
                         {currentSlideData.description}
                       </motion.p>
 
-                      {/* Buttons - Appear FOURTH with staggered entrance */}
+                      {/* Buttons - Appear FOURTH with staggered entrance
                       <motion.div
                         className="flex flex-wrap gap-4"
                         initial={{ opacity: 0 }}
@@ -475,7 +475,7 @@ const HeroCarousel: React.FC = () => {
                         >
                           Contact Us
                         </motion.a>
-                      </motion.div>
+                      </motion.div> */}
                     </motion.div>
                   </AnimatePresence>
                 </div>

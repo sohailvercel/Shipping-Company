@@ -35,11 +35,11 @@ const About: React.FC = () => {
   const companies = [
     {
       id: "baksh-investment",
-      name: "Baksh Shipping Lines",
+      name: "Baksh Shipping Lines (Pvt) Ltd",
       // shortDescription:
       //   "Strategic investment and financial services company driving growth in the maritime sector.",
       description:
-        "Baksh Shipping Lines was established in 1967 as part of the Group’s strategic initiative to expand and diversify its business operations. Our flexible service offerings include charter services",
+        "Baksh shipping lines (pvt) Ltd (formerly Baksh Investment Limited) was established in 1967 as part of the Group’s strategic initiative to expand and diversify its business operations. Our flexible service offerings include charter services",
       // icon: <Briefcase className="w-8 h-8 text-blue-600" />,
       // link: "/baksh-shipping",
       // year: 2008,
@@ -107,11 +107,11 @@ const About: React.FC = () => {
     },
     {
       id: "yaaseen-pvt",
-      name: "Yaaseen Shipping (Pvt) Ltd",
+      name: "Yaaseen Shipping Lines (Pvt) Ltd",
       shortDescription:
         "Specialized cargo solutions and vessel operations with a focus on efficiency and reliability.",
       description:
-        "Yaaseen Shipping (PVT) Ltd specializes in providing comprehensive shipping and logistics solutions tailored to meet the specific needs of our clients. Our expertise includes container shipping, break bulk, special equipment equipment for sensitive or oversized shipments, and project cargo handling.",
+        "Yaaseen Shipping Lines (PVT) Ltd specializes in providing comprehensive shipping and logistics solutions tailored to meet the specific needs of our clients. Our expertise includes container shipping, break bulk, special equipment equipment for sensitive or oversized shipments, and project cargo handling.",
       // icon: <Anchor className="w-8 h-8 text-blue-600" />,
       // link: "/yaaseen-shipping-pvt",
       // year: 2015,
@@ -211,7 +211,7 @@ const About: React.FC = () => {
     {
       year: 1967,
       event:
-        "Baksh Shipping Lines incorporated, expanding into stevedoring, terminal handling, and lighterage operations",
+        "Baksh Shipping Lines (Pvt) Ltd. incorporated, expanding into stevedoring, terminal handling, and lighterage operations",
     },
     {
       year: 1981,
@@ -383,9 +383,9 @@ const About: React.FC = () => {
                  className="h-24 w-24 object-contain"
                />
 
-               <h2 className="text-3xl font-bold text-gray-900 leading-none">
+               {/* <h2 className="text-3xl font-bold text-gray-900 leading-none">
                  Our Group
-               </h2>
+               </h2> */}
               </div>
               <div className="grid md:grid-cols-2 gap-8">
                 <div>
@@ -728,11 +728,11 @@ established in Karachi and Lahore Port, serving key clients.
                           </p>
                           <p className="text-gray-600 mb-6 leading-relaxed">
                             {company.id === "baksh-investment" &&
-                              "In 1978, Baksh Shipping Lines resumed operations, initiating services in stevedoring, terminal handling, and lighterage operations. The company quickly established itself as a trusted contractor for major national organizations, including the Pakistan National Shipping Corporation (PNSC), Rice Export Corporation of Pakistan, and the Trading Corporation of Pakistan."}
+                              "In 1978, Baksh Shipping Lines (Pvt) Ltd resumed operations, initiating services in stevedoring, terminal handling, and lighterage operations. The company quickly established itself as a trusted contractor for major national organizations, including the Pakistan National Shipping Corporation (PNSC), Rice Export Corporation of Pakistan, and the Trading Corporation of Pakistan."}
                             {company.id === "yaaseen-shipping" &&
                               "By combining deep industry knowledge with local market expertise, Yaaseen Shipping Lines continues to achieve consistent growth in volume and revenue, particularly through light cargo bookings and specialized logistics arrangements.  Its operational excellence is reinforced by reliable documentation, prompt communication, and close coordination with OOCL offices and customers. With a customer-centric approach, Yaaseen Shipping Lines focuses on nurturing long-term partnerships while actively expanding its clientele through superior service delivery, timely responses, and value-driven logistics solutions. "}
                             {company.id === "yaaseen-pvt" &&
-                              "Established in 1981, Yaaseen Shipping Pvt Ltd began operations to represent international shipping principals in Pakistan. In 1984, the company was appointed as the exclusive agent for Orient Overseas Container Line (OOCL) and demonstrated outstanding performance throughout the years, earning a strong reputation within the industry. Building on this success, in 2006, YSL was further entrusted with agency representation for STX Pan Ocean Co Ltd (now Pan Ocean)."}
+                              "Established in 1981, Yaaseen Shipping Lines (PVT) Ltd began operations to represent international shipping principals in Pakistan. In 1984, the company was appointed as the exclusive agent for Orient Overseas Container Line (OOCL) and demonstrated outstanding performance throughout the years, earning a strong reputation within the industry. Building on this success, in 2006, YSL was further entrusted with agency representation for STX Pan Ocean Co Ltd (now Pan Ocean)."}
                             {company.id === "uosl" &&
                               "UOSL’s Empty Container Parks are fully equipped with all essential commercial infrastructure, including experienced and professional personnel, automated and computerized operations, and timely electronic reporting/documentation (EDI). Our competent office and field teams ensure operational efficiency and accuracy across all processes."}
                             {company.id === "zoom" &&
@@ -752,29 +752,27 @@ established in Karachi and Lahore Port, serving key clients.
                           </p>
                           <p className="text-gray-600 mb-6 leading-relaxed">
                             {company.id === "baksh-shipping" &&
-                              "Baksh Shipping Lines maintains strong relationships with port authorities, customs departments, and other key stakeholders, ensuring smooth, efficient, and compliant vessel operations."}
+                              "Baksh Shipping Lines (Pvt) Ltd maintains strong relationships with port authorities, customs departments, and other key stakeholders, ensuring smooth, efficient, and compliant vessel operations."}
                             {company.id === "yaaseen-pvt" && (
-                              <>
-                                Over the years, Yaaseen Shipping Pvt Ltd has
-                                continued to expand its partnerships and
-                                currently represents several renowned global
-                                shipping lines, including:
-                                <ul className="list-disc list-inside mt-2">
-                                  <li>W Container Lines Ltd.</li>
-                                  <li>China SOC Lines</li>
-                                  <li>
-                                    Metro Logistics International Pvt Ltd.
-                                  </li>
-                                  <li>
-                                    Shanghai Jin Jiang Shipping (Group) Co Ltd.
-                                  </li>
-                                </ul>
-                              </>
+                              "Over the years, Yaaseen Shipping Lines (PVT) Ltd has continued to expand its partnerships and currently represents several renowned global shipping lines, including Shanghai Jin Jiang Shipping (Group) Co Ltd."
+                              // <>
+
+                              //   {/* <ul className="list-disc list-inside mt-2"> */}
+                              //     {/* <li>W Container Lines Ltd.</li>
+                              //     <li>China SOC Lines</li>
+                              //     <li>
+                              //       Metro Logistics International Pvt Ltd.
+                              //     </li> */}
+                              //     {/* <li>
+                              //       Shanghai Jin Jiang Shipping (Group) Co Ltd.
+                              //     </li> */}
+                              //   {/* </ul> */}
+                              // </>
                             )}
                           </p>
                           <p className="text-gray-600 mb-6 leading-relaxed">
                             {company.id === "baksh-shipping" &&
-                              "In chartering, the company provides end-to-end solutions, covering vessel chartering, voyage coordination, and cargo movement for both import and export sectors. Baksh Shipping Lines has successfully arranged vessel charters for dry bulk, breakbulk, and project cargoes, maintaining strong relationships with regional and international shipowners, charterers, and brokers."}
+                              "In chartering, the company provides end-to-end solutions, covering vessel chartering, voyage coordination, and cargo movement for both import and export sectors. Baksh Shipping Lines (Pvt) Ltd has successfully arranged vessel charters for dry bulk, breakbulk, and project cargoes, maintaining strong relationships with regional and international shipowners, charterers, and brokers."}
                             {company.id === "yaaseen-pvt" &&
                               "Through these strategic alliances, YSL has built a robust presence in both regional and global markets, offering reliable maritime and logistics solutions across a wide range of trade routes. The company’s dedicated team of professionals ensures that each client receives personalized service, timely communication, and efficient cargo handling, reinforcing YSL’s standing as a trusted and performance-driven shipping agency in Pakistan."}
                             {company.id === "uosl" &&
@@ -784,7 +782,7 @@ established in Karachi and Lahore Port, serving key clients.
                           </p>
                           <p className="text-gray-600 mb-6 leading-relaxed">
                             {company.id === "baksh-shipping" &&
-                              "Over the years, the company has evolved into a leading service provider in Pakistan’s maritime sector, offering a comprehensive range of port and vessel management services. With a legacy spanning over five decades, Baksh Shipping Lines remains committed to operational excellence, client satisfaction, and continuous innovation in Pakistan’s maritime and logistics industry."}
+                              "Over the years, the company has evolved into a leading service provider in Pakistan’s maritime sector, offering a comprehensive range of port and vessel management services. With a legacy spanning over five decades, Baksh Shipping Lines (Pvt) Ltd remains committed to operational excellence, client satisfaction, and continuous innovation in Pakistan’s maritime and logistics industry."}
                           </p>
                         </div>
                         <div className="bg-gray-100 rounded-lg overflow-hidden h-96 md:h-full">

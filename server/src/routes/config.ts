@@ -11,7 +11,8 @@ router.get('/tracking-url', (req, res) => {
     res.status(200).json({
         success: true,
         data: {
-            trackingUrl: process.env.TRACKING_URL || ''
+            trackingUrl: process.env.TRACKING_URL || '',
+            whatsappNumber: process.env.WHATSAPP_NUMBER || '+923333636403'
         }
     });
 });

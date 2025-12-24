@@ -75,7 +75,7 @@ const BakshGroup: React.FC = () => {
     {
       year: '1967',
       title: 'Formal Incorporation',
-      event: 'Baksh Shipping Lines was incorporated',
+      event: 'Baksh Shipping Lines (Pvt) Ltd was incorporated',
       icon: Building2
     },
     {

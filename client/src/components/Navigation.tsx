@@ -4,7 +4,8 @@ import {
   Menu,
   X,
   ChevronDown,
-  User,
+  // User,
+  Lock,
   // Image,
   // Newspaper,
   Quote,
@@ -14,7 +15,7 @@ import { useAuth } from "../contexts/AuthContext";
 
 const Navigation: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isCompaniesOpen, setIsCompaniesOpen] = useState(false);
+  // const [isCompaniesOpen, setIsCompaniesOpen] = useState(false);
   const [isServicesOpen, setIsServicesOpen] = useState(false);
   const [isMediaOpen, setIsMediaOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -22,8 +23,9 @@ const Navigation: React.FC = () => {
   const [isPakistanOpen, setIsPakistanOpen] = useState(false);
   const [isTerminalsOpen, setIsTerminalsOpen] = useState(false);
   const pakistanRef = useRef<HTMLDivElement>(null);
+  const [isDownloadsOpen, setIsDownloadsOpen] = useState(false);
   const terminalsRef = useRef<HTMLDivElement>(null);
-  const [trackingUrl, setTrackingUrl] = useState<string>("");
+  // const [trackingUrl, setTrackingUrl] = useState<string>("");
   const location = useLocation();
 
   // Close dropdown when clicking outside
@@ -33,7 +35,7 @@ const Navigation: React.FC = () => {
         dropdownRef.current &&
         !dropdownRef.current.contains(event.target as Node)
       ) {
-        setIsCompaniesOpen(false);
+        // setIsCompaniesOpen(false);
       }
       if (
         mediaRef.current &&
@@ -87,36 +89,38 @@ const Navigation: React.FC = () => {
       setIsTerminalsOpen(false);
     }, HOVER_CLOSE_DELAY);
   };
-  // Fetch tracking URL
-  useEffect(() => {
-    const fetchTrackingUrl = async () => {
-      try {
-        const response = await fetch(`${import.meta.env.VITE_API_BASE || 'http://localhost:5000'}/api/config/tracking-url`);
-        const result = await response.json();
-        if (result.success && result.data.trackingUrl) {
-          setTrackingUrl(result.data.trackingUrl);
-        }
-      } catch (error) {
-        console.error("Error fetching tracking URL:", error);
-      }
-    };
-    fetchTrackingUrl();
-  }, []);
+  // // Fetch tracking URL
+  // useEffect(() => {
+  //   const fetchTrackingUrl = async () => {
+  //     try {
+  //       const response = await fetch(`${import.meta.env.VITE_API_BASE || 'http://localhost:5000'}/api/config/tracking-url`);
+  //       const result = await response.json();
+  //       if (result.success && result.data.trackingUrl) {
+  //         setTrackingUrl(result.data.trackingUrl);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching tracking URL:", error);
+  //     }
+  //   };
+  //   fetchTrackingUrl();
+  // }, []);
 
   // Close menu when route changes
   useEffect(() => {
     setIsOpen(false);
-    setIsCompaniesOpen(false);
+    // setIsCompaniesOpen(false);
     setIsServicesOpen(false);
     setIsMediaOpen(false);
     setIsPakistanOpen(false);
     setIsTerminalsOpen(false);
+    setIsDownloadsOpen(false);
   }, [location]);
 
   const { isAuthenticated, user } = useAuth();
   const isAdmin = isAuthenticated && user?.role === "admin";
 
   return (
+
     <nav className="bg-white/40 backdrop-blur-md text-gray-800 shadow-lg sticky top-0 z-50 border-b border-white/20 w-full">
       <div className="max-w-[1400px] mx-auto px-3 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between py-2 sm:py-3">
@@ -134,9 +138,9 @@ const Navigation: React.FC = () => {
           {/* Desktop Nav */}
           <div className="hidden lg:flex items-center space-x-2">
             <NavLink to="/">HOME</NavLink>
-            <NavLink to="/about">ABOUT</NavLink>
+            <NavLink to="/about">ABOUT US</NavLink>
 
-            {/* Companies Dropdown */}
+            {/* Companies Dropdown
             <div
               className="relative"
               ref={dropdownRef}
@@ -196,7 +200,7 @@ const Navigation: React.FC = () => {
                   </motion.div>
                 )}
               </AnimatePresence>
-            </div>
+            </div> */}
 
             {/* Services Dropdown */}
             <div
@@ -245,7 +249,7 @@ const Navigation: React.FC = () => {
                 )}
               </AnimatePresence>
             </div>
-
+            <NavLink to="/tariffs">TARIFFS/SCHEDULE</NavLink>
             {/* Media Dropdown (Gallery + News) */}
             <div
               className="relative"
@@ -275,8 +279,6 @@ const Navigation: React.FC = () => {
                 )}
               </AnimatePresence>
             </div>
-            <NavLink to="/contact">CONTACT</NavLink>
-            <NavLink to="/tariffs">TARIFFS</NavLink>
 
             {/* Pakistan Insights Dropdown */}
             <div
@@ -317,7 +319,7 @@ const Navigation: React.FC = () => {
                       to="/pakistan-insights"
                       label="Overview"
                     />
-                    {trackingUrl && (
+                    {/* {trackingUrl && (
                       <a
                         href={trackingUrl}
                         target="_blank"
@@ -326,7 +328,7 @@ const Navigation: React.FC = () => {
                       >
                         Shipment Tracking
                       </a>
-                    )}
+                    )} */}
                     <div className="border-t border-gray-100" />
                     <div className="relative" ref={terminalsRef}>
                       <button
@@ -383,19 +385,53 @@ const Navigation: React.FC = () => {
                 )}
               </AnimatePresence>
             </div>
+            <NavLink to="/contact">CONTACT US</NavLink>
 
+            {/* Downloads Dropdown */}
+            <div
+              className="relative"
+              onMouseEnter={() => setIsDownloadsOpen(true)}
+              onMouseLeave={() => setIsDownloadsOpen(false)}
+            >
+              <button
+                type="button"
+                className="px-3 py-2 text-sm text-gray-700 hover:text-blue-600 flex items-center bg-transparent border-none cursor-pointer"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setIsDownloadsOpen(!isDownloadsOpen);
+                }}
+              >
+                DOWNLOADS
+                <ChevronDown
+                  className={`ml-1 h-4 w-4 transition-transform ${isDownloadsOpen ? "rotate-180" : ""}`}
+                />
+              </button>
+              <AnimatePresence>
+                {isDownloadsOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 z-50"
+                  >
+                    <DropdownItem to="/downloads/import" label="Import" />
+                    <DropdownItem to="/downloads/export" label="Export" />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
             {/* <NavLink to="/schedule">VESSEL SCHEDULE</NavLink> */}
 
-            {/* Right side */}
-            {isAdmin ? (
-              <NavLink to="/admin/dashboard">
-                <User className="w-4 h-4 mr-1" /> ADMIN
-              </NavLink>
-            ) : (
-              <NavLink to="/login">
-                <User className="w-4 h-4 mr-1" /> LOGIN
-              </NavLink>
-            )}
+            <Link
+              to={isAdmin ? "/admin/dashboard" : "/login"}
+              className="p-2 text-gray-500 hover:text-blue-600 transition-colors"
+              title="Port Access"
+            >
+              <Lock className="w-5 h-5" />
+            </Link>
+
             <Link
               to="/quote"
               className="px-3 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg text-sm hover:from-blue-700 hover:to-blue-800 transition"
@@ -426,10 +462,10 @@ const Navigation: React.FC = () => {
           >
             <div className="px-4 py-4 space-y-2">
               <MobileLink to="/" label="HOME" />
-              <MobileLink to="/about" label="ABOUT" />
+              <MobileLink to="/about" label="ABOUT US" />
 
               {/* Mobile Companies */}
-              <button
+              {/* <button
                 onClick={() => setIsCompaniesOpen(!isCompaniesOpen)}
                 className="flex justify-between items-center w-full px-4 py-3 text-left text-gray-700 hover:bg-blue-50 rounded-lg"
               >
@@ -510,6 +546,7 @@ const Navigation: React.FC = () => {
                   </motion.div>
                 )}
               </AnimatePresence>
+              <MobileLink to="/tariffs" label="TARIFFS & SCHEDULES" />
               {/* Mobile MEDIA accordion */}
               <button
                 onClick={() => setIsMediaOpen(!isMediaOpen)}
@@ -535,8 +572,6 @@ const Navigation: React.FC = () => {
                   </motion.div>
                 )}
               </AnimatePresence>
-              <MobileLink to="/contact" label="CONTACT" />
-              <MobileLink to="/tariffs" label="TARIFFS" />
               {/* Mobile Pakistan Insights accordion */}
               <button
                 onClick={() => setIsPakistanOpen(!isPakistanOpen)}
@@ -561,7 +596,7 @@ const Navigation: React.FC = () => {
                       to="/pakistan-insights/our-pakistan"
                       label="Overview"
                     />
-                    {trackingUrl && (
+                    {/* {trackingUrl && (
                       <a
                         href={trackingUrl}
                         target="_blank"
@@ -570,7 +605,7 @@ const Navigation: React.FC = () => {
                       >
                         Shipment Tracking
                       </a>
-                    )}
+                    )} */}
                     <button
                       onClick={() => setIsTerminalsOpen(!isTerminalsOpen)}
                       className="flex justify-between items-center w-full px-4 py-2 text-left text-gray-700 hover:bg-blue-50 rounded-lg"
@@ -612,23 +647,24 @@ const Navigation: React.FC = () => {
                   </motion.div>
                 )}
               </AnimatePresence>
+              <MobileLink to="/contact" label="CONTACT US" />
+              <MobileLink to="/downloads" label="DOWNLOADS" />
               {/* <MobileLink to="/schedule" label="VESSEL SCHEDULE" /> */}
 
-              {isAdmin ? (
-                <MobileLink
-                  to="/admin/dashboard"
-                  label="ADMIN"
-                  icon={<User />}
-                />
-              ) : (
-                <MobileLink to="/login" label="LOGIN" icon={<User />} />
-              )}
-              <Link
-                to="/quote"
-                className="block text-center px-4 py-2 text-white bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg"
-              >
-                GET A QUOTE
-              </Link>
+              <div className="flex items-center gap-2 pt-2 border-t border-gray-100/50">
+                <Link
+                  to={isAdmin ? "/admin/dashboard" : "/login"}
+                  className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
+                >
+                  <Lock className="w-5 h-5" />
+                </Link>
+                <Link
+                  to="/quote"
+                  className="flex-1 text-center px-4 py-2 text-white bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg"
+                >
+                  GET A QUOTE
+                </Link>
+              </div>
             </div>
           </motion.div>
         )}

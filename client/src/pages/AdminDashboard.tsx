@@ -277,7 +277,7 @@ const ExchangeRateWidget: React.FC = () => {
             </button>
             <div className="flex items-center gap-2 ml-2">
               <label className="text-sm">
-                Allow users to fetch historical rates
+                Display Exchange Bar & Historical Rates to Users
               </label>
               <button
                 onClick={async () => {
@@ -289,8 +289,7 @@ const ExchangeRateWidget: React.FC = () => {
                     });
                     setAllowUsers(next);
                     toast.success(
-                      `Historical rates for users ${
-                        next ? "enabled" : "disabled"
+                      `Historical rates for users ${next ? "enabled" : "disabled"
                       }`
                     );
                   } catch (e: any) {
@@ -304,11 +303,10 @@ const ExchangeRateWidget: React.FC = () => {
                   }
                 }}
                 disabled={toggling}
-                className={`px-3 py-1 rounded-lg font-medium ${
-                  allowUsers
+                className={`px-3 py-1 rounded-lg font-medium ${allowUsers
                     ? "bg-green-600 text-white"
                     : "bg-gray-200 text-gray-800"
-                }`}
+                  }`}
               >
                 {toggling ? "Saving…" : allowUsers ? "ON" : "OFF"}
               </button>

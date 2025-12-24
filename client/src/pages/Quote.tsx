@@ -4,8 +4,8 @@ import { motion } from 'framer-motion';
 import {
   Ship,
   MapPin,
-  Package,
-  Calendar,
+  // Package,
+  // Calendar,
   ArrowRight,
   CheckCircle,
   Send,
@@ -91,10 +91,10 @@ const Quote: React.FC = () => {
     }
   };
 
-  const containerTypes = [
-    '20 STD', '20 REF', '20 FLC', '20 OT', '20 TNK',
-    '40 HC', '40 STD', '40 HRF', '40 FLC', '40 OT', '45 HC'
-  ];
+  // const containerTypes = [
+  //   '20 STD', '20 REF', '20 FLC', '20 OT', '20 TNK',
+  //   '40 HC', '40 STD', '40 HRF', '40 FLC', '40 OT', '45 HC'
+  // ];
 
   const cargoTypes = [
     'General Cargo', 'Containerized', 'Break Bulk', 'Project Cargo',
@@ -102,7 +102,7 @@ const Quote: React.FC = () => {
   ];
 
   const shipmentTypes = [
-    'Import', 'Export', 'Transhipment', 'Domestic'
+    'Import', 'Export', 'Transhipment'
   ];
 
   if (isSubmitted) {
@@ -278,7 +278,7 @@ const Quote: React.FC = () => {
               </div>
 
               {/* Cargo Specifications */}
-              <div>
+              {/* <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
                   <Package className="w-5 h-5 mr-2 text-blue-600" />
                   Cargo Specifications
@@ -327,10 +327,10 @@ const Quote: React.FC = () => {
                     </select>
                   </div>
                 </div>
-              </div>
+              </div> */}
 
               {/* Dates */}
-              <div>
+              {/* <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
                   <Calendar className="w-5 h-5 mr-2 text-blue-600" />
                   Important Dates
@@ -361,12 +361,12 @@ const Quote: React.FC = () => {
                     />
                   </div>
                 </div>
-              </div>
+              </div> */}
 
               {/* Special Requirements */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Special Requirements
+                    Details/Requirements
                 </label>
                 <textarea
                   name="specialRequirements"

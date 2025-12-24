@@ -23,6 +23,7 @@ const Contact = React.lazy(() => import('./pages/Contact'));
 const EServiceDetail = React.lazy(() => import('./pages/EServiceDetail'));
 const Tariffs = React.lazy(() => import('./pages/Tariffs'));
 // const Schedule = React.lazy(() => import('./pages/Schedule'));
+const DownloadCenter = React.lazy(() => import('./pages/DownloadCenter'));
 const NotFound = React.lazy(() => import('./pages/NotFound'));
 const News = React.lazy(() => import('./pages/News'));
 const PakistanInsights = React.lazy(() => import('./pages/PakistanInsights'));
@@ -72,149 +73,149 @@ function App() {
   return (
     <ErrorBoundary>
       <AuthProvider>
-      <Router>
-        {/* ⚠️ Remove AuthProvider if it doesn't exist */}
-        {/* <AuthProvider> */}
-        <div className="App min-h-screen">
+        <Router>
+          {/* ⚠️ Remove AuthProvider if it doesn't exist */}
+          {/* <AuthProvider> */}
+          <div className="App min-h-screen">
 
-          <Toaster
-            position="top-right"
-            gutter={8}
-            containerClassName="z-50"
-            toastOptions={{
-              duration: 4000,
-              className: 'bg-gray-900 border border-gray-700 shadow-lg rounded-lg text-white',
-              success: {
-                iconTheme: {
-                  primary: '#10b981',
-                  secondary: '#000000',
+            <Toaster
+              position="top-right"
+              gutter={8}
+              containerClassName="z-50"
+              toastOptions={{
+                duration: 4000,
+                className: 'bg-gray-900 border border-gray-700 shadow-lg rounded-lg text-white',
+                success: {
+                  iconTheme: {
+                    primary: '#10b981',
+                    secondary: '#000000',
+                  },
                 },
-              },
-              error: {
-                iconTheme: {
-                  primary: '#ef4444',
-                  secondary: '#000000',
+                error: {
+                  iconTheme: {
+                    primary: '#ef4444',
+                    secondary: '#000000',
+                  },
                 },
-              },
-            }}
-          />
+              }}
+            />
 
-          <Suspense fallback={<PageLoader />}>
-            <AnimatePresence mode="wait" initial={false}>
-              <Routes>
-                <Route
-                  path="/"
-                  element={
-                    <Layout>
-                      <AnimatedRoute>
-                        <Home />
-                      </AnimatedRoute>
-                    </Layout>
-                  }
-                />
-                <Route
-                  path="/baksh-group"
-                  element={
-                    <Layout>
-                      <AnimatedRoute>
-                        <BakshGroup />
-                      </AnimatedRoute>
-                    </Layout>
-                  }
-                />
-                <Route
-                  path="/baksh-investment"
-                  element={
-                    <Layout>
-                      <AnimatedRoute>
-                        <BakshInvestment />
-                      </AnimatedRoute>
-                    </Layout>
-                  }
-                />
-                <Route
-                  path="/yaaseen-shipping-pvt"
-                  element={
-                    <Layout>
-                      <AnimatedRoute>
-                        <YaaseenShippingPVT />
-                      </AnimatedRoute>
-                    </Layout>
-                  }
-                />
-                 <Route
-                  path="/UOSL"
-                  element={
-                    <Layout>
-                      <AnimatedRoute>
-                        <UOSL />
-                      </AnimatedRoute>
-                    </Layout>
-                  }
-                />
-                <Route
-                  path="/about"
-                  element={
-                    <Layout>
-                      <AnimatedRoute>
-                        <About />
-                      </AnimatedRoute>
-                    </Layout>
-                  }
-                />
-                <Route
-                  path="/yaaseen-about"
-                  element={
-                    <Layout>
-                      <AnimatedRoute>
-                        <YaaseenAbout />
-                      </AnimatedRoute>
-                    </Layout>
-                  }
-                />
-                <Route
-                  path="/gallery"
-                  element={
-                    <Layout>
-                      <AnimatedRoute>
-                        <Gallery />
-                      </AnimatedRoute>
-                    </Layout>
-                  }
-                />
-                <Route
-                  path="/News"
-                  element={
-                    <Layout>
-                      <AnimatedRoute>
-                        <News />
-                      </AnimatedRoute>
-                    </Layout>
-                  }
-                />
-                <Route
-                  path="/login"
-                  element={
-                    <Layout>
-                      <AnimatedRoute>
-                        <Login />
-                      </AnimatedRoute>
-                    </Layout>
-                  }
-                />
-                <Route
-                  path="/admin/dashboard"
-                  element={
-                    <ProtectedRoute requireAdmin={true}>
+            <Suspense fallback={<PageLoader />}>
+              <AnimatePresence mode="wait" initial={false}>
+                <Routes>
+                  <Route
+                    path="/"
+                    element={
                       <Layout>
                         <AnimatedRoute>
-                          <AdminDashboard />
+                          <Home />
                         </AnimatedRoute>
                       </Layout>
-                    </ProtectedRoute>
-                  }
-                />
-                {/* <Route
+                    }
+                  />
+                  <Route
+                    path="/baksh-group"
+                    element={
+                      <Layout>
+                        <AnimatedRoute>
+                          <BakshGroup />
+                        </AnimatedRoute>
+                      </Layout>
+                    }
+                  />
+                  <Route
+                    path="/baksh-investment"
+                    element={
+                      <Layout>
+                        <AnimatedRoute>
+                          <BakshInvestment />
+                        </AnimatedRoute>
+                      </Layout>
+                    }
+                  />
+                  <Route
+                    path="/yaaseen-shipping-pvt"
+                    element={
+                      <Layout>
+                        <AnimatedRoute>
+                          <YaaseenShippingPVT />
+                        </AnimatedRoute>
+                      </Layout>
+                    }
+                  />
+                  <Route
+                    path="/UOSL"
+                    element={
+                      <Layout>
+                        <AnimatedRoute>
+                          <UOSL />
+                        </AnimatedRoute>
+                      </Layout>
+                    }
+                  />
+                  <Route
+                    path="/about"
+                    element={
+                      <Layout>
+                        <AnimatedRoute>
+                          <About />
+                        </AnimatedRoute>
+                      </Layout>
+                    }
+                  />
+                  <Route
+                    path="/yaaseen-about"
+                    element={
+                      <Layout>
+                        <AnimatedRoute>
+                          <YaaseenAbout />
+                        </AnimatedRoute>
+                      </Layout>
+                    }
+                  />
+                  <Route
+                    path="/gallery"
+                    element={
+                      <Layout>
+                        <AnimatedRoute>
+                          <Gallery />
+                        </AnimatedRoute>
+                      </Layout>
+                    }
+                  />
+                  <Route
+                    path="/News"
+                    element={
+                      <Layout>
+                        <AnimatedRoute>
+                          <News />
+                        </AnimatedRoute>
+                      </Layout>
+                    }
+                  />
+                  <Route
+                    path="/login"
+                    element={
+                      <Layout>
+                        <AnimatedRoute>
+                          <Login />
+                        </AnimatedRoute>
+                      </Layout>
+                    }
+                  />
+                  <Route
+                    path="/admin/dashboard"
+                    element={
+                      <ProtectedRoute requireAdmin={true}>
+                        <Layout>
+                          <AnimatedRoute>
+                            <AdminDashboard />
+                          </AnimatedRoute>
+                        </Layout>
+                      </ProtectedRoute>
+                    }
+                  />
+                  {/* <Route
                   path="/admin/schedule"
                   element={
                     <ProtectedRoute>
@@ -226,27 +227,27 @@ function App() {
                     </ProtectedRoute>
                   }
                 /> */}
-                <Route
-                  path="/quote"
-                  element={
-                    <Layout>
-                      <AnimatedRoute>
-                        <Quote />
-                      </AnimatedRoute>
-                    </Layout>
-                  }
-                />
-                <Route
-                  path="/contact"
-                  element={
-                    <Layout>
-                      <AnimatedRoute>
-                        <Contact />
-                      </AnimatedRoute>
-                    </Layout>
-                  }
-                />
-                {/* <Route
+                  <Route
+                    path="/quote"
+                    element={
+                      <Layout>
+                        <AnimatedRoute>
+                          <Quote />
+                        </AnimatedRoute>
+                      </Layout>
+                    }
+                  />
+                  <Route
+                    path="/contact"
+                    element={
+                      <Layout>
+                        <AnimatedRoute>
+                          <Contact />
+                        </AnimatedRoute>
+                      </Layout>
+                    }
+                  />
+                  {/* <Route
                   path="/services"
                   element={
                     <Layout>
@@ -256,80 +257,90 @@ function App() {
                     </Layout>
                   }
                 /> */}
-                <Route
-                  path="/services/:id"
-                  element={
-                    <Layout>
-                      <AnimatedRoute>
-                        <EServiceDetail />
-                      </AnimatedRoute>
-                    </Layout>
-                  }
-                />
-                {/* Backward compatibility redirect */}
-                <Route path="/eservices" element={<Navigate to="/services" replace />} />
-                <Route path="/eservices/:id" element={<Navigate to="/services/:id" replace />} />
-                <Route
-                  path="/tariffs"
-                  element={
-                    <Layout>
-                      <AnimatedRoute>
-                        <Tariffs />
-                      </AnimatedRoute>
-                    </Layout>
-                  }
-                />
-                <Route
-                  path="/pakistan-insights"
-                  element={
-                    <Layout>
-                      <AnimatedRoute>
-                        <PakistanInsights />
-                      </AnimatedRoute>
-                    </Layout>
-                  }
-                />  
-                <Route
-                  path="/terminals/kict"
-                  element={
-                    <Layout>
-                      <AnimatedRoute>
-                        <KICT />
-                      </AnimatedRoute>
-                    </Layout>
-                  }
-                />  
-                <Route
-                  path="/terminals/kgtl"
-                  element={
-                    <Layout>
-                      <AnimatedRoute>
-                        <KGTL />
-                      </AnimatedRoute>
-                    </Layout>
-                  }
-                />  
-                <Route
-                  path="/terminals/sapt"
-                  element={
-                    <Layout>
-                      <AnimatedRoute>
-                        <SAPT />
-                      </AnimatedRoute>
-                    </Layout>
-                  }
-                />  
-                <Route
-                  path="/terminals/qict"
-                  element={
-                    <Layout>
-                      <AnimatedRoute>
-                        <QICT />
-                      </AnimatedRoute>
-                    </Layout>
-                  }
-                />
-                {/* <Route
+                  <Route
+                    path="/services/:id"
+                    element={
+                      <Layout>
+                        <AnimatedRoute>
+                          <EServiceDetail />
+                        </AnimatedRoute>
+                      </Layout>
+                    }
+                  />
+                  {/* Backward compatibility redirect */}
+                  <Route path="/eservices" element={<Navigate to="/services" replace />} />
+                  <Route path="/eservices/:id" element={<Navigate to="/services/:id" replace />} />
+                  <Route
+                    path="/downloads/:category"
+                    element={
+                      <Layout>
+                        <AnimatedRoute>
+                          <DownloadCenter />
+                        </AnimatedRoute>
+                      </Layout>
+                    }
+                  />
+                  <Route
+                    path="/tariffs"
+                    element={
+                      <Layout>
+                        <AnimatedRoute>
+                          <Tariffs />
+                        </AnimatedRoute>
+                      </Layout>
+                    }
+                  />
+                  <Route
+                    path="/pakistan-insights"
+                    element={
+                      <Layout>
+                        <AnimatedRoute>
+                          <PakistanInsights />
+                        </AnimatedRoute>
+                      </Layout>
+                    }
+                  />
+                  <Route
+                    path="/terminals/kict"
+                    element={
+                      <Layout>
+                        <AnimatedRoute>
+                          <KICT />
+                        </AnimatedRoute>
+                      </Layout>
+                    }
+                  />
+                  <Route
+                    path="/terminals/kgtl"
+                    element={
+                      <Layout>
+                        <AnimatedRoute>
+                          <KGTL />
+                        </AnimatedRoute>
+                      </Layout>
+                    }
+                  />
+                  <Route
+                    path="/terminals/sapt"
+                    element={
+                      <Layout>
+                        <AnimatedRoute>
+                          <SAPT />
+                        </AnimatedRoute>
+                      </Layout>
+                    }
+                  />
+                  <Route
+                    path="/terminals/qict"
+                    element={
+                      <Layout>
+                        <AnimatedRoute>
+                          <QICT />
+                        </AnimatedRoute>
+                      </Layout>
+                    }
+                  />
+                  {/* <Route
                   path="/schedule"
                   element={
                     <Layout>
@@ -340,24 +351,24 @@ function App() {
                   }
                 /> */}
 
-                <Route path="/home" element={<Navigate to="/" replace />} />
+                  <Route path="/home" element={<Navigate to="/" replace />} />
 
-                <Route
-                  path="*"
-                  element={
-                    <AnimatedRoute>
-                      <Layout>
-                        <NotFound />
-                      </Layout>
-                    </AnimatedRoute>
-                  }
-                />
-              </Routes>
-            </AnimatePresence>
-          </Suspense>
-        </div>
-        
-      </Router>
+                  <Route
+                    path="*"
+                    element={
+                      <AnimatedRoute>
+                        <Layout>
+                          <NotFound />
+                        </Layout>
+                      </AnimatedRoute>
+                    }
+                  />
+                </Routes>
+              </AnimatePresence>
+            </Suspense>
+          </div>
+
+        </Router>
       </AuthProvider>
     </ErrorBoundary>
   );

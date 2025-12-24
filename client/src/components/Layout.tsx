@@ -12,7 +12,24 @@ interface LayoutProps {
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const location = useLocation();
   const path = location.pathname;
-  
+  const [whatsappNumber, setWhatsappNumber] = React.useState<string>("+92 333 3636403");
+
+  // Fetch public config
+  React.useEffect(() => {
+    const fetchConfig = async () => {
+      try {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE || 'http://localhost:5000'}/api/config/tracking-url`);
+        const result = await response.json();
+        if (result.success && result.data.whatsappNumber) {
+          setWhatsappNumber(result.data.whatsappNumber);
+        }
+      } catch (error) {
+        console.error("Error fetching config:", error);
+      }
+    };
+    fetchConfig();
+  }, []);
+
   // Don't show WhatsApp button on dashboard, login, or admin pages
   const showWhatsAppButton =
     !path.includes('/dashboard') && !path.includes('/login') && !path.includes('/admin');
@@ -34,7 +51,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
       </main>
 
       {/* WhatsApp Button */}
-      {showWhatsAppButton && <WhatsAppButton phoneNumber="+923333333333" />}
+      {showWhatsAppButton && <WhatsAppButton phoneNumber={whatsappNumber} />}
 
       {/* Global Footer */}
       <Footer />
