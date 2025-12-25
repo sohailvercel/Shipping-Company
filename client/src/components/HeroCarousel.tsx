@@ -74,7 +74,7 @@ const HeroCarousel: React.FC = () => {
       title: "Decades of Excellence",
       subtitle: "Where Every Mile Builds Trust",
       description:
-        "With 70+ years of expertise in the maritime industry, we continue to set the standard for quality, performance, and customer care.",
+        "With 75+ years of expertise in the maritime industry, we continue to set the standard for quality, performance, and customer care.",
       image: "",
       cta: "About Us",
       ctaLink: "/about",
