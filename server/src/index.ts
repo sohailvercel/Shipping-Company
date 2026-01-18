@@ -1,18 +1,20 @@
 import express from "express";
-import path from "path";
 import cors from "cors";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+import morgan from "morgan";
+import fs from "fs";
+import path from "path";
 
-// Load env as early as possible
+// Load env variables early
 dotenv.config();
 
+// Utils & Middleware
 import { errorHandler } from "./middleware/errorHandler";
 import { notFound } from "./middleware/notFound";
 import logger from "./utils/logger";
-import morgan from "morgan";
 
 // Routes
 import authRoutes from "./routes/auth";
@@ -29,13 +31,13 @@ import downloadDocsRoutes from "./routes/downloadDocs";
 
 import seedAdmin from "./utils/seedAdmin";
 
-// Create app
+// ------------------------- EXPRESS APP -------------------------
 const app = express();
 
-/* ------------------------- DATABASE ------------------------- */
+// ------------------------- DATABASE -------------------------
 const connectDB = async () => {
   if (!process.env.MONGO_URI) {
-    throw new Error("MONGO_URI not defined");
+    throw new Error("MONGO_URI not defined in .env");
   }
 
   await mongoose.connect(process.env.MONGO_URI, {
@@ -49,11 +51,13 @@ const connectDB = async () => {
   logger.info("✅ MongoDB connected");
 };
 
-/* ------------------------- MIDDLEWARE ------------------------- */
-app.use(helmet({
-  contentSecurityPolicy: false, // temporarily disable for debugging assets
-  crossOriginResourcePolicy: { policy: "cross-origin" }
-}));
+// ------------------------- MIDDLEWARE -------------------------
+app.use(
+  helmet({
+    contentSecurityPolicy: false, // disable for assets
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+  })
+);
 
 app.use(
   cors({
@@ -69,22 +73,20 @@ app.use(express.urlencoded({ extended: true }));
 app.use(
   morgan(":method :url :status :res[content-length] - :response-time ms", {
     stream: {
-      write: (message) => logger.http(message.trim()),
+      write: (msg) => logger.http(msg.trim()),
     },
   })
 );
 
+// Rate limiting
 app.use(
   rateLimit({
-    windowMs: 15 * 60 * 1000,
+    windowMs: 15 * 60 * 1000, // 15 min
     max: 100,
   })
 );
 
-// Serve static assets if needed, but not local uploads anymore
-// app.use("/uploads", ...) removed in favor of Cloudinary
-
-/* ------------------------- ROUTES ------------------------- */
+// ------------------------- ROUTES -------------------------
 app.use("/api/auth", authRoutes);
 app.use("/api/gallery", galleryRoutes);
 app.use("/api/blogs", blogRoutes);
@@ -97,58 +99,42 @@ app.use("/api/config", configRoutes);
 app.use("/api/schedule-file", scheduleFileRoutes);
 app.use("/api/download-docs", downloadDocsRoutes);
 
+// Health check
 app.get("/api/health", (_req, res) => {
   res.status(200).json({ status: "ok", time: new Date() });
 });
 
-/* ------------------------- FRONTEND SERVING ------------------------- */
-// More robust path resolution for cPanel/Production
-const possiblePaths = [
-  path.join(__dirname, "..", "..", "client", "dist"),
-  path.join(process.cwd(), "..", "client", "dist"),
-  path.join(process.cwd(), "public"),
-];
+// ------------------------- FRONTEND SERVING (Optional) -------------------------
+// Since frontend will be on Server97, you can skip this.
+// Uncomment if you want backend to serve static frontend:
 
-let clientBuildPath = possiblePaths[0];
+/*
+const clientBuildPath = path.join(__dirname, "..", "..", "client", "dist");
+if (fs.existsSync(path.join(clientBuildPath, "index.html"))) {
+  logger.info(`📍 Frontend build found at: ${clientBuildPath}`);
+  app.use(express.static(clientBuildPath));
 
-// Simple check to find which path actually contains index.html
-import fs from "fs";
-for (const p of possiblePaths) {
-  if (fs.existsSync(path.join(p, "index.html"))) {
-    clientBuildPath = p;
-    logger.info(`📍 Found frontend build at: ${clientBuildPath}`);
-    break;
-  }
+  app.get("*", (req, res, next) => {
+    if (req.path.startsWith("/api")) return next();
+    const indexPath = path.join(clientBuildPath, "index.html");
+    if (fs.existsSync(indexPath)) res.sendFile(indexPath);
+    else next();
+  });
 }
+*/
 
-app.use(express.static(clientBuildPath));
-
-// Catch-all route to serve the React index.html
-app.get("*", (req, res, next) => {
-  if (req.path.startsWith("/api")) {
-    return next();
-  }
-
-  const indexPath = path.join(clientBuildPath, "index.html");
-  if (fs.existsSync(indexPath)) {
-    res.sendFile(indexPath);
-  } else {
-    logger.warn(`⚠️ index.html not found at ${indexPath}`);
-    next();
-  }
-});
-
+// ------------------------- ERROR HANDLING -------------------------
 app.use(notFound);
 app.use(errorHandler);
 
-/* ------------------------- INIT ------------------------- */
+// ------------------------- START SERVER -------------------------
 const PORT = process.env.PORT || 5000;
 
 connectDB()
   .then(async () => {
     await seedAdmin();
     app.listen(PORT, () => {
-      logger.info(`🚀 Server running on http://localhost:${PORT}`);
+      logger.info(`🚀 Server running on port ${PORT}`);
     });
   })
   .catch((err) => {
@@ -157,4 +143,5 @@ connectDB()
   });
 
 export default app;
+
 

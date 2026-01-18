@@ -1,18 +1,32 @@
 {
- "version": 2,
- "builds": [
- {
- "src": "server.js",
- "use": "@vercel/node"
- }
- ],
- "routes": [
- {
- "src": "/api/(.*)",
- "dest": "server.js"
- }
- ],
- "env": {
- "DATABASE_URL": "@database_url",
- "API_KEY": "@api_key"
- }
+  "version": 3,
+  "name": "shipping-backend",
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": [
+          "dist/**",
+          "server/**/*.json",
+          "server/**/*.ts"
+        ]
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "dist/index.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "dist/index.js"
+    }
+  ],
+  "env": {
+    "MONGO_URI": "@mongo_uri",
+    "CLIENT_URL": "https://your-frontend-domain.com",
+    "JWT_SECRET": "@jwt_secret"
+  }
+}
