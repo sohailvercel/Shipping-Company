@@ -8,24 +8,6 @@
   ],
   "routes": [
     { "src": "/(.*)", "dest": "/dist/index.js" }
-  ],
-  "env": {
-    "MONGO_URI": "mongodb+srv://shippingUser:hellobuddy@shippingcluster.rqfhr3i.mongodb.net/shippingDB?retryWrites=true&w=majority",
-    "JWT_SECRET": "shipping_app_super_secret_jwt_key_2024",
-    "JWT_EXPIRE": "7d",
-    "PORT": "5000",
-    "NODE_ENV": "production",
-    "CLIENT_URL": "http://localhost:5173",
-    "MAX_FILE_SIZE": "10485760",
-    "ALLOWED_IMAGE_TYPES": "image/jpeg,image/png,image/webp,image/gif",
-    "ALLOWED_PDF_TYPES": "application/pdf",
-    "ADMIN_CREATION_KEY": "/KfIMKr0UI04UsTEspKeODT6vfeLrNGr3nsVDLzOQZQ",
-    "ADMIN_EMAIL": "admin@shippingapp.com",
-    "ADMIN_PASSWORD": "sohail",
-    "WEB3FORMS_API_KEY": "34a2b6fe-d8cf-4b52-bbdd-efc3e06024c8",
-    "WHATSAPP_NUMBER": "923333636403",
-    "CLOUDINARY_CLOUD_NAME": "de0c7ko9r",
-    "CLOUDINARY_API_KEY": "972418981857774",
-    "CLOUDINARY_API_SECRET": "eU5JOBDYX8V5Ab0rkF79HfNXTjk"
-  }
+  ]
 }
+
