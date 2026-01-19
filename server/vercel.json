@@ -4,13 +4,11 @@
     {
       "src": "server/src/index.ts",
       "use": "@vercel/node",
-      "config": { "tsconfig": "server/tsconfig.json" }
+      "config": { "runtime": "nodejs18.x" }
     }
   ],
   "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "server/src/index.ts"
-    }
+    { "src": "/(.*)", "dest": "server/src/index.ts" }
   ]
 }
+
