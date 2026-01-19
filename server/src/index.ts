@@ -8,7 +8,7 @@ import morgan from "morgan";
 import fs from "fs";
 import path from "path";
 
-// Load env variables early
+// Load env variables
 dotenv.config();
 
 // Utils & Middleware
@@ -54,7 +54,7 @@ const connectDB = async () => {
 // ------------------------- MIDDLEWARE -------------------------
 app.use(
   helmet({
-    contentSecurityPolicy: false, // disable for assets
+    contentSecurityPolicy: false,
     crossOriginResourcePolicy: { policy: "cross-origin" },
   })
 );
@@ -99,15 +99,16 @@ app.use("/api/config", configRoutes);
 app.use("/api/schedule-file", scheduleFileRoutes);
 app.use("/api/download-docs", downloadDocsRoutes);
 
-// Health check
+// ------------------------- ROOT / HEALTH ROUTES -------------------------
+app.get("/", (_req, res) => {
+  res.status(200).json({ message: "API is running" });
+});
+
 app.get("/api/health", (_req, res) => {
   res.status(200).json({ status: "ok", time: new Date() });
 });
 
 // ------------------------- FRONTEND SERVING (Optional) -------------------------
-// Since frontend will be on Server97, you can skip this.
-// Uncomment if you want backend to serve static frontend:
-
 /*
 const clientBuildPath = path.join(__dirname, "..", "..", "client", "dist");
 if (fs.existsSync(path.join(clientBuildPath, "index.html"))) {
@@ -143,5 +144,3 @@ connectDB()
   });
 
 export default app;
-
-
