@@ -29,17 +29,21 @@ router.post("/", async (req, res) => {
     const { name, email, phone, company, subject, message, serviceType } =
       req.body;
 
-    const web3FormData = {
-      access_key: apiKey,
-      subject: subject || "New Contact Message",
-      name: name || "Unknown",
-      email: email || "noreply@example.com",
-      phone: phone || "",
-      company: company || "",
-      service_type: serviceType || "",
-      message: message || "No message provided",
-      from_name: name || "Contact Form",
-    };
+const web3FormData = {
+  access_key: apiKey,
+  subject: subject || "New Contact Message",
+  name: name || "Unknown",
+  email: email || "noreply@example.com",
+  message: `
+Service Type: ${serviceType || "N/A"}
+Phone: ${phone || "N/A"}
+Company: ${company || "N/A"}
+
+Message:
+${message || "No message provided"}
+`.trim(),
+};
+
 
     logger.info("Sending request to Web3Forms with data:", web3FormData);
     const response = await fetch("https://api.web3forms.com/submit", {
