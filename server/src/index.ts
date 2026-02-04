@@ -33,10 +33,16 @@ import seedAdmin from "./utils/seedAdmin";
 // ------------------------- EXPRESS APP -------------------------
 const app = express();
 
+/**
+ * REQUIRED for Render / reverse proxies
+ * Fixes express-rate-limit + auth issues
+ */
+app.set("trust proxy", 1);
+
 // ------------------------- DATABASE -------------------------
 const connectDB = async () => {
   if (!process.env.MONGO_URI) {
-    throw new Error("MONGO_URI not defined in .env");
+    throw new Error("MONGO_URI not defined in environment variables");
   }
 
   await mongoose.connect(process.env.MONGO_URI, {
@@ -64,22 +70,25 @@ app.use(
     credentials: true,
   })
 );
-app.use(express.text({ type: "*/*" }));
+
+// ❗ DO NOT use express.text("*/*") — it breaks JSON auth bodies
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 
-// HTTP request logging with morgan -> winston
+// HTTP logging (morgan → winston)
 app.use(
   morgan(":method :url :status :res[content-length] - :response-time ms", {
     stream: { write: (msg) => logger.http(msg.trim()) },
   })
 );
 
-// Rate limiting
+// Rate limiting (Render-safe)
 app.use(
   rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 min
+    windowMs: 15 * 60 * 1000, // 15 minutes
     max: 100,
+    standardHeaders: true,
+    legacyHeaders: false,
   })
 );
 
@@ -105,7 +114,7 @@ app.get("/api/health", (_req, res) => {
   res.status(200).json({ status: "ok", time: new Date() });
 });
 
-// Optional: prevent favicon 404s
+// Prevent favicon 404 spam
 app.get("/favicon.ico", (_req, res) => res.status(204).end());
 
 // ------------------------- ERROR HANDLING -------------------------
