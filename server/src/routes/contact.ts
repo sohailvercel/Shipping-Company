@@ -84,8 +84,13 @@ const web3FormData = {
       success: true,
       message: "Message sent successfully",
     });
-  } catch (error: any) {
-    logger.error("Contact route error:", error?.response?.data || error);
+} catch (error: any) {
+
+  console.log("FULL AXIOS ERROR:", error);
+  console.log("WEB3FORMS RESPONSE:", error?.response?.data);
+
+  logger.error("Contact route error:", error?.response?.data || error);
+
 
     return res.status(500).json({
       success: false,
