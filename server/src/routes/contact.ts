@@ -56,16 +56,21 @@ const web3FormData = {
 
     logger.info("Sending request to Web3Forms");
 
-    const response = await axios.post(
-      "https://api.web3forms.com/submit",
-      web3FormData,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        timeout: 10000, // 10 seconds safety timeout
-      }
-    );
+const response = await axios.post(
+  "https://api.web3forms.com/submit",
+  web3FormData,
+  {
+    headers: {
+      "Content-Type": "application/json",
+      "User-Agent": "Mozilla/5.0",
+      "Accept": "application/json",
+      "Origin": process.env.CLIENT_URL || "https://yslpk.com",
+      "Referer": process.env.CLIENT_URL || "https://yslpk.com",
+    },
+    timeout: 10000,
+  }
+);
+
 
     const data = response.data;
 
