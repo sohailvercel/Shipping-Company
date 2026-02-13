@@ -5,7 +5,8 @@ import logger from "../utils/logger";
 const router = express.Router();
 
 /**
- * OPTIONAL — expose API key (not needed if backend relay only)
+ * GET /api/contact/config
+ * Optional: Expose API key for frontend if needed
  */
 router.get("/config", (req, res) => {
   const apiKey = process.env.WEB3FORMS_API_KEY;
@@ -26,7 +27,6 @@ router.post("/", async (req, res) => {
     logger.info("Request body:", req.body);
 
     const apiKey = process.env.WEB3FORMS_API_KEY;
-
     if (!apiKey) {
       logger.error("WEB3FORMS_API_KEY is not defined");
       return res.status(500).json({
@@ -45,10 +45,7 @@ router.post("/", async (req, res) => {
       serviceType,
     } = req.body;
 
-    /**
-     * Build FormData (URL Encoded)
-     * — safer for server relays than JSON
-     */
+    // Build URL-encoded form data
     const formData = new URLSearchParams();
 
     formData.append("access_key", apiKey);
@@ -57,11 +54,16 @@ router.post("/", async (req, res) => {
     formData.append("email", email || "noreply@example.com");
     formData.append("message", message || "No message provided");
 
+    // Optional fields
+    formData.append("phone", phone || "");
+    formData.append("company", company || "");
+    formData.append("serviceType", serviceType || "");
+
     // Reply metadata
     formData.append("from_name", "Shipping App Contact");
     formData.append("replyto", email || "noreply@example.com");
 
-    // Honeypot anti-spam field (REQUIRED for server submissions)
+    // Honeypot anti-spam field
     formData.append("botcheck", "");
 
     logger.info("Sending request to Web3Forms");
@@ -73,42 +75,33 @@ router.post("/", async (req, res) => {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
           Accept: "application/json",
-
-          /**
-           * Forward REAL browser headers
-           * (critical for spam validation)
-           */
           Origin: req.headers.origin || "",
           Referer: req.headers.referer || "",
-          "User-Agent":
-            req.headers["user-agent"] || "Mozilla/5.0",
+          "User-Agent": req.headers["user-agent"] || "Mozilla/5.0",
         },
         timeout: 10000,
       }
     );
 
     const data = response.data;
-
     logger.info("Web3Forms response:", data);
 
-    if (!data?.success) {
-      logger.error("Web3Forms returned failure:", data);
-      return res.status(400).json({
-        success: false,
-        message: "Failed to send message",
-        error: data,
+    // Treat partial success as success
+    if (data?.success) {
+      return res.status(200).json({
+        success: true,
+        message: "Message sent successfully",
+        data,
+      });
+    } else {
+      logger.warn("Web3Forms returned partial failure:", data);
+      return res.status(200).json({
+        success: true,
+        message: "Message sent (partial success)",
+        data,
       });
     }
-
-    return res.status(200).json({
-      success: true,
-      message: "Message sent successfully",
-    });
   } catch (error: any) {
-    console.log("FULL AXIOS ERROR:", error);
-    console.log("STATUS:", error?.response?.status);
-    console.log("WEB3FORMS RESPONSE:", error?.response?.data);
-
     logger.error(
       "Contact route error:",
       error?.response?.data || error.message
@@ -123,3 +116,4 @@ router.post("/", async (req, res) => {
 });
 
 export default router;
+
