@@ -5,7 +5,7 @@ import logger from "../utils/logger";
 const router = express.Router();
 
 /**
- * Optional: expose API key to frontend if needed
+ * OPTIONAL — expose API key (not needed if backend relay only)
  */
 router.get("/config", (req, res) => {
   const apiKey = process.env.WEB3FORMS_API_KEY;
@@ -45,32 +45,47 @@ router.post("/", async (req, res) => {
       serviceType,
     } = req.body;
 
-const web3FormData = {
-  access_key: apiKey,
-  subject: subject || "New Contact Message",
-  name: name || "Unknown",
-  email: email || "noreply@example.com",
-  message: message || "No message provided",
-};
+    /**
+     * Build FormData (URL Encoded)
+     * — safer for server relays than JSON
+     */
+    const formData = new URLSearchParams();
 
+    formData.append("access_key", apiKey);
+    formData.append("subject", subject || "New Contact Message");
+    formData.append("name", name || "Unknown");
+    formData.append("email", email || "noreply@example.com");
+    formData.append("message", message || "No message provided");
+
+    // Reply metadata
+    formData.append("from_name", "Shipping App Contact");
+    formData.append("replyto", email || "noreply@example.com");
+
+    // Honeypot anti-spam field (REQUIRED for server submissions)
+    formData.append("botcheck", "");
 
     logger.info("Sending request to Web3Forms");
 
-const response = await axios.post(
-  "https://api.web3forms.com/submit",
-  web3FormData,
-  {
-    headers: {
-      "Content-Type": "application/json",
-      "User-Agent": "Mozilla/5.0",
-      "Accept": "application/json",
-      "Origin": process.env.CLIENT_URL || "https://yslpk.com",
-      "Referer": process.env.CLIENT_URL || "https://yslpk.com",
-    },
-    timeout: 10000,
-  }
-);
+    const response = await axios.post(
+      "https://api.web3forms.com/submit",
+      formData,
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          Accept: "application/json",
 
+          /**
+           * Forward REAL browser headers
+           * (critical for spam validation)
+           */
+          Origin: req.headers.origin || "",
+          Referer: req.headers.referer || "",
+          "User-Agent":
+            req.headers["user-agent"] || "Mozilla/5.0",
+        },
+        timeout: 10000,
+      }
+    );
 
     const data = response.data;
 
@@ -89,13 +104,15 @@ const response = await axios.post(
       success: true,
       message: "Message sent successfully",
     });
-} catch (error: any) {
+  } catch (error: any) {
+    console.log("FULL AXIOS ERROR:", error);
+    console.log("STATUS:", error?.response?.status);
+    console.log("WEB3FORMS RESPONSE:", error?.response?.data);
 
-  console.log("FULL AXIOS ERROR:", error);
-  console.log("WEB3FORMS RESPONSE:", error?.response?.data);
-
-  logger.error("Contact route error:", error?.response?.data || error);
-
+    logger.error(
+      "Contact route error:",
+      error?.response?.data || error.message
+    );
 
     return res.status(500).json({
       success: false,
