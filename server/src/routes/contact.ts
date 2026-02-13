@@ -45,17 +45,14 @@ router.post("/", async (req, res) => {
       serviceType,
     } = req.body;
 
-    const web3FormData = {
-      access_key: apiKey,
-      subject: subject || "New Contact Message",
-      name: name || "Unknown",
-      email: email || "noreply@example.com",
-      phone: phone || "",
-      company: company || "",
-      service_type: serviceType || "",
-      message: message || "No message provided",
-      from_name: name || "Contact Form",
-    };
+const web3FormData = {
+  access_key: apiKey,
+  subject: subject || "New Contact Message",
+  name: name || "Unknown",
+  email: email || "noreply@example.com",
+  message: message || "No message provided",
+};
+
 
     logger.info("Sending request to Web3Forms");
 
