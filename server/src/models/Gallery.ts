@@ -1,7 +1,7 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
-export interface IGallery extends Document {
-  _id: string;
+export interface IGallery {
+  _id?: mongoose.Types.ObjectId;
   title: string;
   description: string;
   imageUrl: string;
@@ -48,3 +48,4 @@ const GallerySchema = new Schema<IGallery>(
 GallerySchema.index({ category: 1, createdAt: -1 });
 
 export default mongoose.model<IGallery>("Gallery", GallerySchema);
+
