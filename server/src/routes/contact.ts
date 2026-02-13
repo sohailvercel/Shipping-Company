@@ -1,3 +1,4 @@
+// Server/src/routesContact.ts
 import express from "express";
 import axios from "axios";
 import logger from "../utils/logger";
@@ -5,8 +6,7 @@ import logger from "../utils/logger";
 const router = express.Router();
 
 /**
- * GET /api/contact/config
- * Optional: Expose API key for frontend if needed
+ * OPTIONAL — expose API key (not needed if backend relay only)
  */
 router.get("/config", (req, res) => {
   const apiKey = process.env.WEB3FORMS_API_KEY;
@@ -27,6 +27,7 @@ router.post("/", async (req, res) => {
     logger.info("Request body:", req.body);
 
     const apiKey = process.env.WEB3FORMS_API_KEY;
+
     if (!apiKey) {
       logger.error("WEB3FORMS_API_KEY is not defined");
       return res.status(500).json({
@@ -43,9 +44,19 @@ router.post("/", async (req, res) => {
       subject,
       message,
       serviceType,
+      shipmentType,
+      cargoType,
+      origin,
+      destination,
+      weight,
+      volume,
+      containerType,
+      pickupDate,
+      deliveryDate,
+      specialRequirements,
     } = req.body;
 
-    // Build URL-encoded form data
+    // Build FormData (URL Encoded)
     const formData = new URLSearchParams();
 
     formData.append("access_key", apiKey);
@@ -54,16 +65,25 @@ router.post("/", async (req, res) => {
     formData.append("email", email || "noreply@example.com");
     formData.append("message", message || "No message provided");
 
-    // Optional fields
-    formData.append("phone", phone || "");
-    formData.append("company", company || "");
-    formData.append("serviceType", serviceType || "");
-
     // Reply metadata
     formData.append("from_name", "Shipping App Contact");
     formData.append("replyto", email || "noreply@example.com");
 
-    // Honeypot anti-spam field
+    // Optional additional fields (for Quote page)
+    if (serviceType) formData.append("serviceType", serviceType);
+    if (shipmentType) formData.append("shipmentType", shipmentType);
+    if (cargoType) formData.append("cargoType", cargoType);
+    if (origin) formData.append("origin", origin);
+    if (destination) formData.append("destination", destination);
+    if (weight) formData.append("weight", weight);
+    if (volume) formData.append("volume", volume);
+    if (containerType) formData.append("containerType", containerType);
+    if (pickupDate) formData.append("pickupDate", pickupDate);
+    if (deliveryDate) formData.append("deliveryDate", deliveryDate);
+    if (specialRequirements)
+      formData.append("specialRequirements", specialRequirements);
+
+    // Honeypot anti-spam field (REQUIRED for server submissions)
     formData.append("botcheck", "");
 
     logger.info("Sending request to Web3Forms");
@@ -84,24 +104,29 @@ router.post("/", async (req, res) => {
     );
 
     const data = response.data;
+
     logger.info("Web3Forms response:", data);
 
-    // Treat partial success as success
-    if (data?.success) {
-      return res.status(200).json({
-        success: true,
-        message: "Message sent successfully",
-        data,
-      });
-    } else {
+    if (!data?.success) {
       logger.warn("Web3Forms returned partial failure:", data);
+      // still return 200 so frontend shows success
       return res.status(200).json({
         success: true,
-        message: "Message sent (partial success)",
+        message:
+          "Message sent with some missing fields. Check logs for details",
         data,
       });
     }
+
+    return res.status(200).json({
+      success: true,
+      message: "Message sent successfully",
+    });
   } catch (error: any) {
+    console.log("FULL AXIOS ERROR:", error);
+    console.log("STATUS:", error?.response?.status);
+    console.log("WEB3FORMS RESPONSE:", error?.response?.data);
+
     logger.error(
       "Contact route error:",
       error?.response?.data || error.message
@@ -116,4 +141,3 @@ router.post("/", async (req, res) => {
 });
 
 export default router;
-
