@@ -1,8 +1,8 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema, HydratedDocument } from 'mongoose';
 import bcrypt from 'bcryptjs';
 
-export interface IUser extends Document {
-  _id: string;
+export interface IUser {
+  _id?: mongoose.Types.ObjectId;
   email: string;
   password: string;
   role: 'admin' | 'user';
@@ -39,12 +39,14 @@ const UserSchema = new Schema<IUser>(
 );
 
 // 🔐 Encrypt password before saving
-UserSchema.pre<IUser>('save', async function (this: IUser, next) {
-  if (!this.isModified('password')) return next();
+UserSchema.pre('save', async function (next) {
+  const user = this as HydratedDocument<IUser>;
+
+  if (!user.isModified('password')) return next();
 
   try {
     const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
+    user.password = await bcrypt.hash(user.password, salt);
     next();
   } catch (error) {
     next(error as any);
@@ -53,13 +55,14 @@ UserSchema.pre<IUser>('save', async function (this: IUser, next) {
 
 // 🧠 Compare password method
 UserSchema.methods.comparePassword = async function (
-  this: IUser,
   candidatePassword: string
 ): Promise<boolean> {
-  try {
-    if (!this.password) return false;
+  const user = this as HydratedDocument<IUser>;
 
-    const isMatch = await bcrypt.compare(candidatePassword, this.password);
+  try {
+    if (!user.password) return false;
+
+    const isMatch = await bcrypt.compare(candidatePassword, user.password);
     return isMatch;
   } catch (error) {
     console.error('Password comparison error:', error);
