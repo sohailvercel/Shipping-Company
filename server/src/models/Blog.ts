@@ -1,7 +1,7 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
-export interface IBlog extends Document {
-  _id: string;
+export interface IBlog {
+  _id?: mongoose.Types.ObjectId;
   title: string;
   excerpt: string;
   content: string;
@@ -100,3 +100,4 @@ BlogSchema.index({ category: 1, featured: 1, publishDate: -1 });
 BlogSchema.index({ tags: 1 });
 
 export default mongoose.model<IBlog>("Blog", BlogSchema);
+
