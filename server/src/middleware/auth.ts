@@ -1,14 +1,9 @@
 import { Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import User from '../models/User';
-import { AuthRequest, JWTPayload, IUser } from '../types';
-import { HydratedDocument } from 'mongoose';
+import { AuthRequest, JWTPayload } from '../types';
 
-export const protect = async (
-  req: AuthRequest,
-  res: Response,
-  next: NextFunction
-) => {
+export const protect = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     let token;
 
@@ -21,38 +16,55 @@ export const protect = async (
     if (!token) {
       return res.status(401).json({
         success: false,
-        error: 'Not authorized to access this route',
+        error: 'Authentication failed: No token provided'
       });
+    }
+
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      console.error('CRITICAL: JWT_SECRET is not defined in environment variables');
+      return res.status(500).json({ success: false, error: 'Server configuration error' });
     }
 
     try {
       // Verify token
-      const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JWTPayload;
+      const decoded = jwt.verify(token, secret) as JWTPayload;
 
-      // Get user from token
-      const user: HydratedDocument<IUser> | null = await User.findById(
-        decoded.userId
-      ).select('-password');
+      // Support both id and userId for transition, but prefer userId
+      const userId = decoded.userId || (decoded as any).id;
 
-      if (!user) {
+      if (!userId) {
+        console.error('Protect Middleware Error: Token payload missing userId/id', decoded);
         return res.status(401).json({
           success: false,
-          error: 'Not authorized to access this route',
+          error: 'Authentication failed: Invalid token payload'
         });
       }
 
-      req.user = user; // now type matches: HydratedDocument<IUser>
+      // Get user from token
+      const user = await User.findById(userId).select('-password');
+
+      if (!user) {
+        console.error(`Protect Middleware Error: User not found in DB for ID: ${userId}`);
+        return res.status(401).json({
+          success: false,
+          error: 'Authentication failed: User no longer exists'
+        });
+      }
+
+      req.user = user;
       return next();
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Protect Middleware JWT Error:', error.message);
       return res.status(401).json({
         success: false,
-        error: 'Not authorized to access this route',
+        error: `Authentication failed: ${error.message || 'Invalid token'}`
       });
     }
   } catch (error) {
     return res.status(500).json({
       success: false,
-      error: 'Server error in authentication',
+      error: 'Server error in authentication'
     });
   }
 };
@@ -62,17 +74,18 @@ export const authorize = (...roles: string[]) => {
     if (!req.user) {
       return res.status(401).json({
         success: false,
-        error: 'Not authorized to access this route',
+        error: 'Not authorized to access this route'
       });
     }
 
     if (!roles.includes(req.user.role)) {
       return res.status(403).json({
         success: false,
-        error: `User role ${req.user.role} is not authorized to access this route`,
+        error: `User role ${req.user.role} is not authorized to access this route`
       });
     }
 
     return next();
   };
 };
+
