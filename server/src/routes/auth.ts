@@ -33,9 +33,11 @@ router.post('/login', async (req, res) => {
       });
     }
 
-    // Generate token (cast jwt to any to avoid TS overload complaints)
-    const token = (jwt as any).sign({ id: user._id }, process.env.JWT_SECRET!, {
-      expiresIn: process.env.JWT_EXPIRE
+    // Generate token
+    const token = generateToken({
+      userId: user._id.toString(),
+      email: user.email,
+      role: user.role
     });
 
     return res.status(200).json({
@@ -87,8 +89,11 @@ router.post('/create-admin', async (req, res) => {
       role: 'admin'
     });
 
-    const token = (jwt as any).sign({ id: user._id }, process.env.JWT_SECRET!, {
-      expiresIn: process.env.JWT_EXPIRE
+    // Generate token
+    const token = generateToken({
+      userId: user._id.toString(),
+      email: user.email,
+      role: user.role
     });
 
     return res.status(201).json({
