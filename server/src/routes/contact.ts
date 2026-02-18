@@ -95,9 +95,9 @@ router.post("/", async (req, res) => {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
           Accept: "application/json",
-          Origin: req.headers.origin || "",
-          Referer: req.headers.referer || "",
-          "User-Agent": req.headers["user-agent"] || "Mozilla/5.0",
+          // Origin: req.headers.origin || "",
+          // Referer: req.headers.referer || "",
+          // "User-Agent": req.headers["user-agent"] || "Mozilla/5.0",
         },
         timeout: 10000,
       }
