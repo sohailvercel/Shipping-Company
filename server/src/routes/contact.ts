@@ -56,48 +56,44 @@ router.post("/", async (req, res) => {
       specialRequirements,
     } = req.body;
 
-    // Build FormData (URL Encoded)
-    const formData = new URLSearchParams();
+    // Build JSON payload (Web3Forms supports JSON)
+    const payload = {
+      access_key: apiKey,
+      subject: subject || "New Contact Message",
+      name: name || "Unknown",
+      email: email || "noreply@example.com",
+      message: message || "No message provided",
+      from_name: "Shipping App Contact",
+      replyto: email || "noreply@example.com",
+      // Optional additional fields (for Quote page)
+      serviceType,
+      shipmentType,
+      cargoType,
+      origin,
+      destination,
+      weight,
+      volume,
+      containerType,
+      pickupDate,
+      deliveryDate,
+      specialRequirements,
+      // Honeypot anti-spam field (REQUIRED for server submissions)
+      botcheck: "",
+    };
 
-    formData.append("access_key", apiKey);
-    formData.append("subject", subject || "New Contact Message");
-    formData.append("name", name || "Unknown");
-    formData.append("email", email || "noreply@example.com");
-    formData.append("message", message || "No message provided");
-
-    // Reply metadata
-    formData.append("from_name", "Shipping App Contact");
-    formData.append("replyto", email || "noreply@example.com");
-
-    // Optional additional fields (for Quote page)
-    if (serviceType) formData.append("serviceType", serviceType);
-    if (shipmentType) formData.append("shipmentType", shipmentType);
-    if (cargoType) formData.append("cargoType", cargoType);
-    if (origin) formData.append("origin", origin);
-    if (destination) formData.append("destination", destination);
-    if (weight) formData.append("weight", weight);
-    if (volume) formData.append("volume", volume);
-    if (containerType) formData.append("containerType", containerType);
-    if (pickupDate) formData.append("pickupDate", pickupDate);
-    if (deliveryDate) formData.append("deliveryDate", deliveryDate);
-    if (specialRequirements)
-      formData.append("specialRequirements", specialRequirements);
-
-    // Honeypot anti-spam field (REQUIRED for server submissions)
-    formData.append("botcheck", "");
-
-    logger.info("Sending request to Web3Forms");
+    logger.info("Sending Browser-Neutral JSON request to Web3Forms");
 
     const response = await axios.post(
       "https://api.web3forms.com/submit",
-      formData,
+      payload,
       {
         headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
+          "Content-Type": "application/json",
           Accept: "application/json",
-          // Origin: req.headers.origin || "",
-          // Referer: req.headers.referer || "",
-          // "User-Agent": req.headers["user-agent"] || "Mozilla/5.0",
+          // Using Firefox identity as it doesn't require modern Chrome-specific security headers (Client Hints)
+          "User-Agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/115.0",
+          "Accept-Language": "en-US,en;q=0.5",
         },
         timeout: 10000,
       }
