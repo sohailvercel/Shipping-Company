@@ -60,6 +60,7 @@ router.post("/", async (req, res) => {
     const payload = {
       access_key: apiKey,
       subject: subject || "New Contact Message",
+      Subject: subject || "New Contact Message", // Duplicate for email body appearance
       name: name || "Unknown",
       email: email || "noreply@example.com",
       message: message || "No message provided",
